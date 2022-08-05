@@ -1,6 +1,7 @@
 from argparse import ArgumentParser, Action, BooleanOptionalAction
 
 from .index import index
+from .rebuild import rebuild
 from .search import search_command
 from .list import list_blogs
 from .date_parser import parse_date
@@ -43,7 +44,18 @@ search_parser = subparsers.add_parser(
     """,
 )
 search_parser.set_defaults(func=search_command)
-for p in [index_parser, search_parser]:
+rebuild_parser = subparsers.add_parser(
+    "rebuild",
+    help="Rebuild a local database. ",
+    description="""Rebuild a local database.
+    The indexing of a post may change with updates to xapblr as features are
+    added and bugs fixed. As all post data is saved in the database, the index
+    can be updated without the need for an expensive scraping from Tumblr.
+    """,
+)
+rebuild_parser.set_defaults(func=rebuild)
+
+for p in [index_parser, search_parser, rebuild_parser]:
     p.add_argument("blog", metavar="BLOG", type=str, help="The blog to index.")
 
 since_group = index_parser.add_mutually_exclusive_group()
@@ -114,6 +126,7 @@ search_parser.add_argument(
     help="A search term; see README.",
     type=str,
 )
+
 
 server_parser = subparsers.add_parser(
     "server",
