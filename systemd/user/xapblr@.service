@@ -1,0 +1,6 @@
+[Unit]
+Description=Locally index a Tumblr blog
+
+[Service]
+Type=oneshot
+ExecStart=xapblr index %i

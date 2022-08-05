@@ -1,0 +1,9 @@
+[Unit]
+Description=Locally index a Tumblr blog, hourly.
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+
+[Install]
+WantedBy=default.target
