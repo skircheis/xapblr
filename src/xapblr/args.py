@@ -18,11 +18,12 @@ index_parser = subparsers.add_parser(
     """,
 )
 search_parser = subparsers.add_parser(
-    "search", help="Search an indexed blog.",
+    "search",
+    help="Search an indexed blog.",
     description="""
     Search an indexed blog.
     Query format resembles notmutt; see README for details.
-    """
+    """,
 )
 for p in [index_parser, search_parser]:
     p.add_argument("blog", metavar="BLOG", type=str, help="The blog to index.")
