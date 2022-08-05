@@ -52,9 +52,9 @@ The default connective is `AND`.
 * `body:<word-or-quoted-phrase>`
     Match terms in the bodies of posts.
 * `op:<blog-name>`
-    Match posts where the root post is from <blog-name>.
+    Match posts where the root post is from `<blog-name>`.
 * `from:<blog-name>`
-    Match posts where the any post in the reblog chain is from <blog-name>.
+    Match posts where any post in the reblog chain is from `<blog-name>`.
 * `tag:<tag>`
 Match posts tagged `#<tag>`
 * `date:<since>..<until> or date:<date>`
