@@ -58,5 +58,5 @@ except ModuleNotFoundError:
 
     def format_timestamp(ts):
         # Format datetime according to current locale
-        return datetime.frotsstamp(mtime).strftime("%c%")
+        return datetime.fromtimestamp(ts).strftime("%c")
 
