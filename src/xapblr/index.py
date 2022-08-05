@@ -1,4 +1,7 @@
+from time import time
+from datetime import datetime
 from json import dumps
+from math import ceil
 import pytumblr
 from xapian import (
     Document,
@@ -16,6 +19,7 @@ from urllib.parse import quote as urlencode
 
 from .search import get_latest
 from .utils import get_api_key, get_db, format_timestamp, prefixes
+
 
 def get_author(post):
     try:
@@ -67,12 +71,15 @@ def index(args):
 
     n = 0
     print(f"Indexing {args.blog}... ", end="")
+    full = False
     if args.full:
         print("Performing full re-index...")
+        full = True
     else:
         latest_ts = get_latest(args.blog)
         if latest_ts is None:
             print("Database is empty, indexing until beginning...")
+            full = True
         else:
             print(f"Latest seen post is {format_timestamp(latest_ts)}...")
             if args.since is None:
@@ -83,28 +90,51 @@ def index(args):
     if args.stemmer is not None:
         tg.set_stemmer(Stem(args.stemmer))
 
+    blog = client.blog_info(args.blog)["blog"]
+    fetch = True
+    if args.since is not None and args.since >= blog["updated"]:
+        print(f'No new posts since {format_timestamp(blog["updated"])}', end="")
+        fetch = False
 
-    while True:
-        posts = client.posts(args.blog, npf=True, **kwargs)
+    throttle = 3600 / 1000
+    if args.throttle and full:
+        count = blog["posts"]
+        reqs = ceil(count / 20)
+        # rate limit: 5000 requests per calendary day (EST) or 1000 requests
+        # per hour.
+        daily_limit = 5000
+        if reqs >= daily_limit:
+            print(
+                f"Blog has {count} posts, need {reqs} requests; throttling down to {daily_limit} / day."
+            )
+            throttle = 3600 * 24 / daily_limit
+        eta = time() + reqs * throttle
+        eta_hf = format_timestamp(eta)
+        eta_locale = datetime.fromtimestamp(eta).strftime("%c")
+        print(f"ETA: {eta_hf} ({eta_locale})")
+    if not args.throttle:
+        throttle = 0
 
-        if len(posts["posts"]) == 0:
+    while fetch:
+        response = client.posts(args.blog, npf=True, **kwargs)
+        posts = response["posts"]
+
+        if len(posts) == 0:
             break
-        n += len(posts["posts"])
+        n += len(posts)
 
-        for p in posts["posts"]:
+        for p in posts:
             (id_term, post_doc) = index_post(p, tg)
             db.replace_document(id_term, post_doc)
             kwargs["before"] = p["timestamp"]
 
         print(".", end="", flush=True)
-        if "_links" not in posts.keys():
+        if "_links" not in response.keys():
             break
-
         if args.since is not None and args.since >= kwargs["before"]:
             break
 
-        if args.throttle:
-            sleep(3.6)
+        sleep(throttle)
 
     print()
     print(f"Done; indexed {n} posts.")
