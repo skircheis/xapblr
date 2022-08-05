@@ -26,6 +26,8 @@ def search(args):
 
     db = get_db(args.blog, "r")
     qp = QueryParser()
+    qp.set_stemming_strategy(QueryParser.STEM_NONE)
+    qp.set_default_op(Query.OP_AND)
     qp.add_boolean_prefix("author", prefixes["author"])
     qp.add_boolean_prefix("op", prefixes["op"])
     qp.add_boolean_prefix("tag", TagProcessor())
