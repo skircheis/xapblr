@@ -1,4 +1,16 @@
-from argparse import ArgumentParser, BooleanOptionalAction
+from argparse import ArgumentParser, Action, BooleanOptionalAction
+
+from .index import index
+from .date_parser import parse_date
+
+class StoreDateAction(Action):
+    def __init__(self, option_strings, dest, nargs=None, **kwargs):
+        if nargs is not None:
+            raise ValueError("nargs not allowed")
+        super().__init__(option_strings, dest, **kwargs)
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, parse_date(values))
+
 
 argparser = ArgumentParser(prog="xapblr")
 subparsers = argparser.add_subparsers(title="Tasks")
@@ -31,6 +43,7 @@ for p in [index_parser, search_parser]:
 index_parser.add_argument(
     "--since",
     metavar="DATETIME",
+    action=StoreDateAction,
     help="""
     Re-index posts made since %(metavar)s. Default: the time of the latest indexed
     post.
@@ -38,6 +51,7 @@ index_parser.add_argument(
 )
 index_parser.add_argument(
     "--until",
+    action=StoreDateAction,
     metavar="DATETIME",
     help="Re-index posts made until %(metavar)s. Default: now",
 )
