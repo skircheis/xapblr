@@ -21,14 +21,17 @@ def get_api_key():
     with key_file.open() as f:
         return load(f)
 
-def get_db(blog, mode="r"):
-    # returns a xapian database object for the specified blog
-    # mode = 'r' for reading, 'w' for writing
+def get_db_dir():
     try:
         xdg_data_home = Path(environ["XDG_DATA_HOME"])
     except KeyError:
         xdg_data_home = Path(environ["HOME"]) / ".local/share"
-    db_path = xdg_data_home / "xapblr" / blog
+    return xdg_data_home / "xapblr"
+
+def get_db(blog, mode="r"):
+    # returns a xapian database object for the specified blog
+    # mode = 'r' for reading, 'w' for writing
+    db_path = get_db_dir() / blog
     db_path.mkdir(parents=True, exist_ok=True)
     db_path_str = str(db_path)
     if mode == "w":
