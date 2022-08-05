@@ -1,9 +1,10 @@
 from argparse import ArgumentParser, Action, BooleanOptionalAction
 
 from .index import index
+from .list import list_blogs
 from .rebuild import rebuild
 from .search import search_command
-from .list import list_blogs
+from .server import server
 from .date_parser import parse_date
 
 class StoreDateAction(Action):
@@ -135,6 +136,7 @@ server_parser = subparsers.add_parser(
     Start web interface.
     """,
 )
+server_parser.set_defaults(func=server)
 server_parser.add_argument(
     "-p",
     "--port",
