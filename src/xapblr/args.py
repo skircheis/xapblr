@@ -1,4 +1,4 @@
-from argparse import ArgumentParser
+from argparse import ArgumentParser, BooleanOptionalAction
 
 argparser = ArgumentParser(prog="xapblr")
 subparsers = argparser.add_subparsers(title="Tasks")
@@ -47,6 +47,20 @@ index_parser.add_argument(
     help=""" Explicitly re-index the post with this id.""",
 )
 
+search_parser.add_argument(
+    "--verbatim",
+    action=BooleanOptionalAction,
+    help="""
+    Whether to match words exactly. If set to False, use xapian's stemmer.
+    """,
+    default=True,
+)
+search_parser.add_argument(
+    "--sort",
+    choices=["newest", "oldest", "relevance"],
+    help="How to sort search results.",
+    default="newest",
+)
 search_parser.add_argument(
     "search-term",
     nargs="+",
