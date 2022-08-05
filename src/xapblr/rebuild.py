@@ -25,6 +25,6 @@ def rebuild(args):
             (id_term, post_doc) = index_post(loads(old.get_data()), tg)
             db.replace_document(id_term, post_doc)
         offset += perpage
-        print(".", end="")
+        print(".", end="", flush=True)
     print()
     print("Done.")
