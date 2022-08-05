@@ -114,8 +114,11 @@ search_parser.add_argument(
     "--renderer",
     choices=list(renderers.keys()),
     help="""
-    Output format. Note that HTML output queries Tumblr's OEmbed enpoint and
-    is therefore MUCH slower than formats that rely on locally cached data.
+    Output format. Json dumps the indexed as a JSON object. Plain, md, html
+    approximate Tumblr's own rendering with increasing (but low, even for html)
+    fidelity. Finally, embed queries Tumblr's OEmbed enpoint for the embedded
+    HTML. It is therefore MUCH slower than formats that rely on locally cached
+    data and not suitable for large sets of matches.
     Default: %(default)s.
     """,
     default="json",
@@ -127,8 +130,8 @@ search_parser.add_argument(
     help="""
     Target output width. With the plain text renderer, wraps lines after
     %(metavar)s characters. With the markdown renderer, chooses images as close
-    to %(metavar)s pixels wide as possible. Has no effect on json and html
-    output.
+    to %(metavar)s pixels wide as possible. Has no effect on json, html, or
+    embed output.
     Default: 80 (plain), 540 (md).
     """
 )

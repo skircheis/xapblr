@@ -43,7 +43,9 @@ def render_md_one(post, width):
         return ""
     user = post["blog"]["name"]
     out = f"**{user}:**\n\n"
-    out += "".join([render_md_block(block, width) + "\n\n" for block in post["content"]])
+    out += "".join(
+        [render_md_block(block, width) + "\n\n" for block in post["content"]]
+    )
     return out
 
 
@@ -69,6 +71,49 @@ def render_md_block(block, pref_width):
 
 
 def render_html(post, args):
+    rendered = [render_html_one(p) for p in post["trail"]]
+    rendered.append(render_html_one(post))
+    delim = "\n<hr />\n"
+    inner_html = delim.join([r for r in rendered if r])
+    return (
+        "<div class='tumblr-post'>\n\t"
+        + inner_html.replace("\n", "\n\t")[:-1]
+        + "\n</div>\n"
+    )
+
+
+def render_html_one(post):
+    if len(post["content"]) == 0:
+        return ""
+    user = post["blog"]["name"]
+    out = f'<p class="blog-name">\n\t{user}:\n</p>\n'
+    out += "".join(
+        ["<p>\n\t" + render_html_block(block) + "\n</p>\n" for block in post["content"]]
+    )
+    return out
+
+
+def render_html_block(block):
+    if block["type"] == "text":
+        return block["text"] + "\n"
+    elif block["type"] == "image":
+        orig_url = None
+        sources = []
+        for m in block["media"]:
+            sources.append(f'{m["url"]} {m["width"]}w')
+            if m.get("has_original_dimensions", False):
+                orig_url = m["url"]
+        srcset = ", ".join(sources)
+        imgtag = f'<img srcset="{srcset}" />'
+        if orig_url:
+            return f'<a href="{orig_url}">{imgtag}</a>'
+        else:
+            return imgtag
+
+    return ""
+
+
+def render_embed(post, args):
     url = f"https://www.tumblr.com/oembed/1.0"
     response = get(url, {"url": post["post_url"]})
     return response.json()["html"]
@@ -77,6 +122,7 @@ def render_html(post, args):
 renderers = {
     "json": render_json,
     "html": render_html,
+    "embed": render_embed,
     "plain": render_plain,
     "md": render_md,
 }
