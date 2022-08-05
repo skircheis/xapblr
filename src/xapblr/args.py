@@ -62,6 +62,16 @@ index_parser.add_argument(
     help=""" Explicitly re-index the post with this id.""",
 )
 index_parser.add_argument(
+    "--stemmer",
+    help="""
+    xapian stemmer to use for indexing.  If absent, posts are indexed verbatim.
+    See xapian docs
+    (https://xapian.org/docs/apidoc/html/classXapian_1_1Stem.html) for possible
+    values
+    """,
+    default=None,
+)
+index_parser.add_argument(
     "--throttle",
     action=BooleanOptionalAction,
     default=True,
