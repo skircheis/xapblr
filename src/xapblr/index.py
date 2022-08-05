@@ -1,3 +1,4 @@
+from json import dumps
 import pytumblr
 from xapian import (
     Document,
@@ -48,6 +49,8 @@ def index_post(post, tg):
 
     doc.add_value(0, sortable_serialise(post["timestamp"]))
     doc.add_term(prefixes["url"] + post["post_url"])
+
+    doc.set_data(dumps(post))
 
     id_term = "Q" + str(post["id"])
     doc.add_boolean_term(id_term)
