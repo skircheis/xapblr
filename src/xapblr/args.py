@@ -53,3 +53,18 @@ search_parser.add_argument(
     help="A search term; see README.",
     type=str,
 )
+
+server_parser = subparsers.add_parser(
+    "server",
+    help="Start web interface.",
+    description="""
+    Start web interface.
+    """,
+)
+server_parser.add_argument(
+    "-p",
+    "--port",
+    type=int,
+    metavar="PORT",
+    help="Listen on port %(port)s",
+)

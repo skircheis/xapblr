@@ -1,3 +1,5 @@
+celery
+flask
 lark
 pytumblr
 xapian
