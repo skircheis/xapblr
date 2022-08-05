@@ -1,5 +1,14 @@
 from json import loads, dumps
-from xapian import Database, Enquire, Query, QueryParser, sortable_unserialise
+from xapian import (
+    Database,
+    Enquire,
+    FieldProcessor,
+    Query,
+    QueryParser,
+    sortable_unserialise,
+)
+from urllib.parse import quote as urlencode
+
 from .utils import format_timestamp, get_db, prefixes
 
 
@@ -8,13 +17,20 @@ def search_command(args):
         print(dumps(m))
 
 
+class TagProcessor(FieldProcessor):
+    def __call__(self, args):
+        return Query(prefixes["tag"] + urlencode(args))
+
+
 def search(args):
 
     db = get_db(args.blog, "r")
     qp = QueryParser()
-    for (name, prefix) in prefixes.items():
-        qp.add_prefix(name, prefix)
-    query = qp.parse_query(" ".join(getattr(args, "search-term")))
+    qp.add_boolean_prefix("author", prefixes["author"])
+    qp.add_boolean_prefix("op", prefixes["op"])
+    qp.add_boolean_prefix("tag", TagProcessor())
+    qstr = " ".join(getattr(args, "search-term"))
+    query = qp.parse_query(qstr)
     enq = Enquire(db)
     if args.sort == "newest":
         enq.set_sort_by_value_then_relevance(0, True)
