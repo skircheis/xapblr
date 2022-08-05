@@ -47,7 +47,12 @@ try:
     def format_timestamp(ts):
         now = datetime.now()
         ts = datetime.fromtimestamp(ts)
-        return humanfriendly.format_timespan(now - ts) + " ago"
+        if (ts - now).total_seconds() > 0:
+            hf = humanfriendly.format_timespan(ts - now)
+            return f"in {hf}"
+        else:
+            hf = humanfriendly.format_timespan(now - ts)
+            return f"{hf} ago"
 
 except ModuleNotFoundError:
 
