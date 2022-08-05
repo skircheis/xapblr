@@ -1,0 +1,27 @@
+[build-system]
+
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xapblr"
+version = "0.1.0"
+authors = [
+  { name="Siegfried Kircheis", email="kircheis.siegfried@proton.me" },
+]
+description = "Locally index a tumblr blog with xapian for searching."
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.scripts]
+xapblr = "xapblr:main"
+
+[project.urls]
+"Homepage" = "https://github.com/skircheis/xapblr"
+"Bug Tracker" = "https://github.com/skircheis/xapblr/issues"
