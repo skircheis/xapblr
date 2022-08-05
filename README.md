@@ -11,9 +11,17 @@ Install with
     python -m build --wheel --no-isolation
     python -m installer dist/*.whl
 ```
-`xapblr` requires a a Tumblr API key, which you can obtain [by registering the app with Tumblr](https://www.tumblr.com/oauth/apps).
-`xapblr` expects to find this key in `$XDG_CONFIG_HOME/xapblr/APIKEY`; although
-this is not enforced, for security this file should be readable only by its
+`xapblr` requires a a Tumblr API key, which you can obtain [by registering the app with Tumblr](https://www.tumblr.com/oauth/apps) and then [obtaining authentication data](https://api.tumblr.com/console/calls/user/info).
+`xapblr` expects to find this authentication data in `$XDG_CONFIG_HOME/xapblr/APIKEY`, in JSON format like so:
+```json
+{
+    "consumer_key": <consumer_key>,
+    "consumer_secret": <consumer_secret>,
+    "oauth_token": <oauth_token>,
+    "oauth_secret": <oauth_secret>
+}
+```
+Although this is not enforced, for security the `APIKEY` file should be readable only by its
 owner.
 
 `xapblr` stores its data in `$XDG_DATA_HOME/share/xapblr/`; by default this
