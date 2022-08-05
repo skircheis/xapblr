@@ -14,6 +14,7 @@ from time import sleep
 
 from urllib.parse import quote as urlencode
 
+from .search import get_latest
 from .utils import get_api_key, get_db, format_timestamp, prefixes
 
 def get_author(post):
@@ -59,32 +60,29 @@ def index_post(post, tg):
 def index(args):
 
     api_key = get_api_key()
-    db = get_db(args.blog, "w")
     client = pytumblr.TumblrRestClient(**api_key)
-    tg = TermGenerator()
-    if args.stemmer is not None:
-        tg.set_stemmer(Stem(args.stemmer))
-
     kwargs = {}
     if args.until is not None:
         kwargs["before"] = args.until
 
     n = 0
     print(f"Indexing {args.blog}... ", end="")
-    if db.get_doccount() == 0:
-        print("Database is empty, indexing until beginning...")
-    elif args.full:
+    if args.full:
         print("Performing full re-index...")
     else:
-        enq = Enquire(db)
-        enq.set_query(Query.MatchAll)
-        enq.set_sort_by_value_then_relevance(0, True)
-        latest = enq.get_mset(0, 1)
-        for p in latest:
-            latest_ts = sortable_unserialise((p.document.get_value(0)))
+        latest_ts = get_latest(args.blog)
+        if latest_ts is None:
+            print("Database is empty, indexing until beginning...")
+        else:
             print(f"Latest seen post is {format_timestamp(latest_ts)}...")
-        if args.since is None:
-            args.since = latest_ts
+            if args.since is None:
+                args.since = latest_ts
+
+    db = get_db(args.blog, "w")
+    tg = TermGenerator()
+    if args.stemmer is not None:
+        tg.set_stemmer(Stem(args.stemmer))
+
 
     while True:
         posts = client.posts(args.blog, npf=True, **kwargs)

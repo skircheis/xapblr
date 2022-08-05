@@ -1,10 +1,12 @@
 from json import loads, dumps
-from xapian import Enquire, Query, QueryParser, sortable_unserialise
+from xapian import Database, Enquire, Query, QueryParser, sortable_unserialise
 from .utils import format_timestamp, get_db, prefixes
+
 
 def search_command(args):
     for m in search(args):
         print(dumps(m))
+
 
 def search(args):
 
@@ -32,3 +34,20 @@ def search(args):
             post_json = doc.get_data().decode("utf-8")
             yield loads(post_json)
         offset += pagesize
+
+
+def get_latest(src):
+    if type(src) == str:
+        db = get_db(src)
+    elif isinstance(src, Database):
+        db = src
+    else:
+        raise TypeError(f"expected xapian database or string, got {type(src)}")
+    if db.get_doccount() == 0:
+        return None
+
+    enq = Enquire(db)
+    enq.set_query(Query.MatchAll)
+    enq.set_sort_by_value_then_relevance(0, True)
+    latest = enq.get_mset(0, 1)[0].document
+    return sortable_unserialise(latest.get_value(0))
