@@ -1,6 +1,7 @@
 from argparse import ArgumentParser, Action, BooleanOptionalAction
 
 from .index import index
+from .search import search_command
 from .date_parser import parse_date
 
 class StoreDateAction(Action):
@@ -32,12 +33,15 @@ index_parser = subparsers.add_parser(
 index_parser.set_defaults(func=index)
 search_parser = subparsers.add_parser(
     "search",
-    help="Search an indexed blog.",
+    help="""Search an indexed blog. For each match, prints the indexed JSON
+    object. Process further with jq.
+    """,
     description="""
     Search an indexed blog.
     Query format resembles notmutt; see README for details.
     """,
 )
+search_parser.set_defaults(func=search_command)
 for p in [index_parser, search_parser]:
     p.add_argument("blog", metavar="BLOG", type=str, help="The blog to index.")
 
