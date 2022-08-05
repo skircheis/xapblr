@@ -35,7 +35,7 @@ def index_post(post, tg):
     tg.set_document(doc)
 
     if len(post["trail"]) > 0:
-        op = get_author(post)
+        op = get_author(post["trail"][0])
     else:
         op = post["blog"]["name"]
     doc.add_term(prefixes["op"] + op)
