@@ -42,7 +42,8 @@ def search(args):
         pass
     enq.set_query(query)
     offset = 0
-    pagesize = 1
+    pagesize = 100
+    count = 0
     while True:
         matches = enq.get_mset(offset, pagesize)
         if matches.empty():
@@ -51,6 +52,9 @@ def search(args):
             doc = match.document
             post_json = doc.get_data().decode("utf-8")
             yield loads(post_json)
+            count += 1
+            if args.limit is not None and count >= args.limit:
+                return
         offset += pagesize
 
 
