@@ -13,20 +13,7 @@ from time import sleep
 
 from urllib.parse import quote as urlencode
 
-from .utils import get_api_key, get_db, format_timestamp
-
-key_fname = "APIKEY"
-
-prefixes = {
-    "content": "XC",
-    "op": "XOP",
-    "author": "A",
-    "id": "Q",
-    "tag": "K",
-    "url": "U",
-    "timestamp": "D",
-}
-
+from .utils import get_api_key, get_db, format_timestamp, prefixes
 
 def get_author(post):
     try:

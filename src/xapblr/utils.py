@@ -4,6 +4,16 @@ from pathlib import Path
 
 from xapian import Database, WritableDatabase, DB_CREATE_OR_OPEN
 
+prefixes = {
+    "content": "XC",
+    "op": "XOP",
+    "author": "A",
+    "id": "Q",
+    "tag": "K",
+    "url": "U",
+    "timestamp": "D",
+}
+
 def get_api_key():
     key_fname = "APIKEY"
     xdg_config_home = Path(environ["XDG_CONFIG_HOME"])
