@@ -19,6 +19,8 @@ owner.
 `xapblr` stores its data in `$XDG_DATA_HOME/share/xapblr/`; by default this
 should be `~/.local/share/xapblr`.
 
+systemd units are provided for regular re-indexing.
+
 ## Initialization and rate-limiting
 
 The Tumblr API is rate-limited to 1000 requests per hour and 5000 requests per
@@ -30,7 +32,10 @@ Incrementally fetching and indexing new posts is trivially cheap: the post
 limit is 250 per day. Daily fetching therefore uses at most 13 requests, and
 even hourly fetching is cheap.
 
-However, continually reindexing an entire blog to reflect any edits that may have been made is obviously prohibitively expensive. If you wish to
+However, continually reindexing an entire blog to reflect any edits that may
+have been made is obviously prohibitively expensive. If you wish to update
+posts that you know have been edited on Tumblr, pass suitable options to
+`xapblr index`.
 
 ## Search terms
 
