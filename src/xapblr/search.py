@@ -9,12 +9,13 @@ from xapian import (
 )
 from urllib.parse import quote as urlencode
 
+from .render import renderers
 from .utils import format_timestamp, get_db, prefixes
-
 
 def search_command(args):
     for m in search(args):
-        print(dumps(m))
+        out = renderers[args.renderer](m, args)
+        print(out)
 
 
 class TagProcessor(FieldProcessor):

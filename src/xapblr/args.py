@@ -3,15 +3,18 @@ from argparse import ArgumentParser, Action, BooleanOptionalAction
 from .index import index
 from .list import list_blogs
 from .rebuild import rebuild
+from .render import renderers
 from .search import search_command
 from .server import server
 from .date_parser import parse_date
+
 
 class StoreDateAction(Action):
     def __init__(self, option_strings, dest, nargs=None, **kwargs):
         if nargs is not None:
             raise ValueError("nargs not allowed")
         super().__init__(option_strings, dest, **kwargs)
+
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, parse_date(values))
 
@@ -107,6 +110,37 @@ index_parser.add_argument(
     """,
 )
 
+search_parser.add_argument(
+    "--renderer",
+    choices=list(renderers.keys()),
+    help="""
+    Output format. Note that HTML output queries Tumblr's OEmbed enpoint and
+    is therefore MUCH slower than formats that rely on locally cached data.
+    Default: %(default)s.
+    """,
+    default="json",
+)
+search_parser.add_argument(
+    "--width",
+    type=int,
+    metavar="W",
+    help="""
+    Target output width. With the plain text renderer, wraps lines after
+    %(metavar)s characters. With the markdown renderer, chooses images as close
+    to %(metavar)s pixels wide as possible. Has no effect on json and html
+    output.
+    Default: 80 (plain), 540 (md).
+    """
+)
+search_parser.add_argument(
+    "-l",
+    "--limit",
+    type=int,
+    help="""
+    Maximum results to return.
+    """,
+    default=None,
+)
 search_parser.add_argument(
     "--verbatim",
     action=BooleanOptionalAction,
