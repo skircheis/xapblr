@@ -2,6 +2,7 @@ from argparse import ArgumentParser, Action, BooleanOptionalAction
 
 from .index import index
 from .search import search_command
+from .list import list_blogs
 from .date_parser import parse_date
 
 class StoreDateAction(Action):
@@ -128,3 +129,6 @@ server_parser.add_argument(
     metavar="PORT",
     help="Listen on port %(port)s",
 )
+
+list_parser = subparsers.add_parser("list", help="List indexed blogs")
+list_parser.set_defaults(func=list_blogs)
