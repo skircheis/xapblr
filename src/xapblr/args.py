@@ -29,6 +29,7 @@ index_parser = subparsers.add_parser(
     edits made on Tumblr.
     """,
 )
+index_parser.set_defaults(func=index)
 search_parser = subparsers.add_parser(
     "search",
     help="Search an indexed blog.",
