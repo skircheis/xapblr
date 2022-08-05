@@ -1,11 +1,19 @@
 import pytumblr
-import xapian
+from xapian import (
+    Document,
+    Enquire,
+    Query,
+    Stem,
+    TermGenerator,
+    sortable_serialise,
+    sortable_unserialise,
+)
 
 from time import sleep
 
 from urllib.parse import quote as urlencode
 
-from .utils import get_api_key, get_db
+from .utils import get_api_key, get_db, format_timestamp
 
 key_fname = "APIKEY"
 
@@ -16,7 +24,9 @@ prefixes = {
     "id": "Q",
     "tag": "K",
     "url": "U",
+    "timestamp": "D",
 }
+
 
 def get_author(post):
     try:
@@ -24,20 +34,18 @@ def get_author(post):
     except KeyError:
         return post["broken_blog_name"]
 
+
 def index_content(post, tg):
-    [
-        tg.index_text(c["text"])
-        for c in post["content"]
-        if c["type"] == "text"
-    ]
+    [tg.index_text(c["text"]) for c in post["content"] if c["type"] == "text"]
     doc = tg.get_document()
     doc.add_term(prefixes["author"] + get_author(post))
 
+
 def index_post(post, tg):
-    doc = xapian.Document()
+    doc = Document()
     tg.set_document(doc)
 
-    if len(post["trail"]) > 0 :
+    if len(post["trail"]) > 0:
         op = get_author(post)
     else:
         op = post["blog"]["name"]
@@ -51,28 +59,43 @@ def index_post(post, tg):
         # xapian will never put a space in a term but we can just urlencode
         doc.add_term(prefixes["tag"] + urlencode(t))
 
+    doc.add_value(0, sortable_serialise(post["timestamp"]))
     doc.add_term(prefixes["url"] + post["post_url"])
 
-    id_term = u"Q" + str(post["id"])
+    id_term = "Q" + str(post["id"])
     doc.add_boolean_term(id_term)
 
     return (id_term, doc)
+
 
 def index(args):
 
     api_key = get_api_key()
     db = get_db(args.blog, "w")
     client = pytumblr.TumblrRestClient(**api_key)
-    tg = xapian.TermGenerator()
+    tg = TermGenerator()
     if args.stemmer is not None:
-        tg.set_stemmer(xapian.Stem(args.stemmer))
+        tg.set_stemmer(Stem(args.stemmer))
 
     kwargs = {}
     if args.until is not None:
         kwargs["before"] = args.until
 
     n = 0
-    print(f"Indexing {args.blog}", end="", flush=True)
+    print(f"Indexing {args.blog}... ", end="")
+    if db.get_doccount() == 0:
+        print("Database is empty, indexing until beginning...")
+    else:
+        enq = Enquire(db)
+        enq.set_query(Query.MatchAll)
+        enq.set_sort_by_value_then_relevance(0, True)
+        latest = enq.get_mset(0, 1)
+        for p in latest:
+            latest_ts = sortable_unserialise((p.document.get_value(0)))
+            print(f"Latest seen post is {format_timestamp(latest_ts)}...")
+        if args.since is None:
+            args.since = latest_ts
+
     while True:
         posts = client.posts(args.blog, npf=True, **kwargs)
 
