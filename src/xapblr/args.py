@@ -46,6 +46,15 @@ index_parser.add_argument(
     nargs="*",
     help=""" Explicitly re-index the post with this id.""",
 )
+index_parser.add_argument(
+    "--throttle",
+    action=BooleanOptionalAction,
+    default=True,
+    help="""
+    Whether to throttle requests to respect Tumblr's API rate limit (1000/hour
+    or 5000/calendar day, EST.)
+    """,
+)
 
 search_parser.add_argument(
     "--verbatim",
