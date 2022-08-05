@@ -41,7 +41,15 @@ search_parser = subparsers.add_parser(
 for p in [index_parser, search_parser]:
     p.add_argument("blog", metavar="BLOG", type=str, help="The blog to index.")
 
-index_parser.add_argument(
+since_group = index_parser.add_mutually_exclusive_group()
+since_group.add_argument(
+    "--full",
+    action='store_true',
+    help="""
+    Force a full re-indexing.
+    """
+)
+since_group.add_argument(
     "--since",
     metavar="DATETIME",
     action=StoreDateAction,

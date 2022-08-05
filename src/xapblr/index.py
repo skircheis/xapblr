@@ -72,6 +72,8 @@ def index(args):
     print(f"Indexing {args.blog}... ", end="")
     if db.get_doccount() == 0:
         print("Database is empty, indexing until beginning...")
+    elif args.full:
+        print("Performing full re-index...")
     else:
         enq = Enquire(db)
         enq.set_query(Query.MatchAll)
