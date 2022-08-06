@@ -47,16 +47,32 @@ function display_results(results) {
         template = document.querySelector("#templates .result").cloneNode(true);
         body = template.querySelector(".result-body")
         body.innerHTML = res["rendered"];
-        tag_target = template.querySelector(".result-tags")
+        tags = template.querySelector(".result-tags")
         res["tags"].forEach( tag => {
             tag_template = document.querySelector("#templates .tag").cloneNode();
             tag_template.innerHTML = "#" + tag;
             tag_template.href = "https://tumblr.com/blog/view/" + res["blog_name"] + "/tagged/" + tag;
-            tag_target.appendChild(tag_template);
+            tags.appendChild(tag_template);
         });
+        template.querySelector(".toggle").addEventListener("click", toggle_preview)
         external_link = template.querySelector(".external-go a");
         external_link.href = res["post_url"];
         target.appendChild(template);
     }
     );
+}
+
+function toggle_preview(event) {
+    target = event.target;
+    while (!target.classList.contains("result")) {
+        target = target.parentNode;
+    }
+    target = target.querySelector(".result-body");
+    if (target.style.overflow == "hidden" ) {
+        target.style.overflow = null;
+        target.style.maxHeight = null;
+    } else if (target.style.overflow == "" ) {
+        target.style.overflow = "hidden";
+        target.style.maxHeight = "100px";
+    }
 }
