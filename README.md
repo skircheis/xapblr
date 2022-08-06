@@ -45,31 +45,6 @@ have been made is obviously prohibitively expensive. If you wish to update
 posts that you know have been edited on Tumblr, pass suitable options to
 `xapblr index`.
 
-## Search terms
-
-## General
-
-`xapblr`'s search terms generally match those of `notmuch`. If you know how
-to work with `notmuch`, you already know most of `xapblr`.
-
-The boolean operators `OR` and `AND`, `NOT`, and parentheses `()` can be used to combine multiple predicates.
-The default connective is `AND`.
-
-## Predicates
-
-* `body:<word-or-quoted-phrase>`
-    Match terms in the bodies of posts.
-* `op:<blog-name>`
-    Match posts where the root post is from `<blog-name>`.
-* `from:<blog-name>`
-    Match posts where any post in the reblog chain is from `<blog-name>`.
-* `tag:<tag>`
-Match posts tagged `#<tag>`
-* `date:<since>..<until> or date:<date>`
-    Match posts made between `<since>` and `<until>`
-
-    xapblr aims to support the same date and time search as `notmuch`; see the `notmuch` documentation for details.
-
 ## Dependencies: ##
  * Python 3
  * `pytumblr`
