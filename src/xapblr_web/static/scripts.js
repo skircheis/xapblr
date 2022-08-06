@@ -47,7 +47,6 @@ function display_results(results) {
         template = document.querySelector("#templates .result").cloneNode(true);
         body = template.querySelector(".result-body")
         body.innerHTML = res["rendered"];
-        target.appendChild(template);
         tag_target = template.querySelector(".result-tags")
         res["tags"].forEach( tag => {
             tag_template = document.querySelector("#templates .tag").cloneNode();
@@ -55,6 +54,9 @@ function display_results(results) {
             tag_template.href = "https://tumblr.com/blog/view/" + res["blog_name"] + "/tagged/" + tag;
             tag_target.appendChild(tag_template);
         });
+        external_link = template.querySelector(".external-go a");
+        external_link.href = res["post_url"];
+        target.appendChild(template);
     }
     );
 }
