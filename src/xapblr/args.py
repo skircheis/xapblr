@@ -1,7 +1,7 @@
 from argparse import ArgumentParser, Action, BooleanOptionalAction
 
 from .index import index
-from .list import list_blogs
+from .list import list_cmd
 from .rebuild import rebuild
 from .render import renderers
 from .search import search_command
@@ -183,4 +183,4 @@ server_parser.add_argument(
 )
 
 list_parser = subparsers.add_parser("list", help="List indexed blogs")
-list_parser.set_defaults(func=list_blogs)
+list_parser.set_defaults(func=list_cmd)
