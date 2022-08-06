@@ -14,6 +14,7 @@ prefixes = {
     "timestamp": "D",
 }
 
+
 def get_api_key():
     key_fname = "APIKEY"
     xdg_config_home = Path(environ["XDG_CONFIG_HOME"])
@@ -21,12 +22,14 @@ def get_api_key():
     with key_file.open() as f:
         return load(f)
 
+
 def get_db_dir():
     try:
         xdg_data_home = Path(environ["XDG_DATA_HOME"])
     except KeyError:
         xdg_data_home = Path(environ["HOME"]) / ".local/share"
     return xdg_data_home / "xapblr"
+
 
 def get_db(blog, mode="r"):
     # returns a xapian database object for the specified blog
@@ -38,6 +41,14 @@ def get_db(blog, mode="r"):
         return WritableDatabase(db_path_str, DB_CREATE_OR_OPEN)
     else:
         return Database(db_path_str, DB_CREATE_OR_OPEN)
+
+
+def get_author(post):
+    try:
+        return post["blog"]["name"]
+    except KeyError:
+        return post["broken_blog_name"]
+
 
 from datetime import datetime
 
@@ -59,4 +70,3 @@ except ModuleNotFoundError:
     def format_timestamp(ts):
         # Format datetime according to current locale
         return datetime.fromtimestamp(ts).strftime("%c")
-

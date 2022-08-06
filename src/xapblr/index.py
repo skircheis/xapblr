@@ -18,14 +18,7 @@ from time import sleep
 from urllib.parse import quote as urlencode
 
 from .search import get_latest
-from .utils import get_api_key, get_db, format_timestamp, prefixes
-
-
-def get_author(post):
-    try:
-        return post["blog"]["name"]
-    except KeyError:
-        return post["broken_blog_name"]
+from .utils import get_api_key, get_author, get_db, format_timestamp, prefixes
 
 
 def index_content(post, tg):
