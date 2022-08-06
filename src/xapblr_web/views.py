@@ -1,6 +1,7 @@
 from argparse import Namespace
-from flask import render_template
+from flask import render_template, request, Response
 from json import dumps
+from time import time_ns
 from xapblr_web import app
 
 
@@ -17,14 +18,33 @@ def list_blogs():
     return dumps(list(l(args)))
 
 
-@app.route("/search/<blog>/")
-def search(blog):
+@app.route("/search", methods=["POST"])
+def search():
     from xapblr.search import search
-    from xapblr.render import render_html
+    from xapblr.render import renderers, render_plain, render_html, render_embed
+    from xapblr.utils import format_timestamp
 
     args = Namespace()
-    args.blog = blog
-    args.sort = "newest"
-    args.limit = 10
-    setattr(args, "search-term", ['tag:"senjougahara hitagi"'])
-    return "\n".join([render_html(m, args) for m in search(args)])
+    args.width = None
+    args.limit = None
+    for (k, v) in request.json.items():
+        setattr(args, k, v)
+    setattr(args, "search-term", [request.json["query"]])
+    # return vars(args)
+    allowed_renderers = ["plain", "html", "embed"]
+    if args.render not in allowed_renderers:
+        return dumps({"error": "Invalid renderer: " + args.render + "."})
+    renderer = renderers[args.render]
+    start = time_ns()
+    matches = search(args)
+    out = {"results": [], "meta": {}}
+    for m in matches:
+        m["rendered"] = renderer(m, args)
+        [m.pop(k) for k in ["content", "trail", "blog"]]
+        m["timestamp_hf"] = format_timestamp(m["timestamp"])
+        out["results"].append(m)
+    stop = time_ns()
+    out["meta"]["time_ns"] = stop - start
+    out["meta"]["count"] = len(out["results"])
+
+    return Response(dumps(out), mimetype="application/json")

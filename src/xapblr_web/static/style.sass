@@ -3,26 +3,23 @@ $fg: #b2b2b2
 $gy: #3a3a3a
 $cy: #87afaf
 $mg: #d78787
-$hi: #efef8f
-$ac: #a0afa0
 $tx: #040404
-$ia: #8f8f8f
-$yw: #ccdc90
 $gn: #88b090
 $rd: #e89393
+$dk: #262626
 
 $font-stack: 'Helvetica Neue', HelveticaNeue, Helvetica, Arial, sans-serif
 
 body
-    height: 100%
     background-color: $bg
     color: $fg
     margin: 0px
-    overflow: auto
-    font: 100% $font-stack
+    iont: 100% $font-stack
     font-style: normal
     font-variant: normal
     font-weight: normal
+    display: flex
+    justify-content: center
 
 
 img
@@ -37,6 +34,9 @@ p
     margin-top: 0em
     margin-bottom: 0em
 
+p.blog-name
+    font-weight: bolder
+
 a
     text-decoration: underline
     cursor: pointer
@@ -45,30 +45,55 @@ a
     &:visited
         color: $mg
 
-#root
+#grid
     display: grid
-    column-gap: 1em
     margin: 1em
-    grid-template-columns: [search] minmax(7em, 1fr) [help] minmax(32em, 0.5fr)
-    position: relative
-    /*min-height: 100%;*/
+    column-gap: 1em
+    grid-template-rows: 10% 90%
+    grid-template-columns: 62% 38%
+    grid-template-areas: "search help" "meta help" "results help"
+    max-width: 1080px
 
 
-#previews
-    flex-grow: 1
-    flex-shrink: 3.8
-    flex-basis: 12em
-    padding: 10px
-    width: 97%
-    font-size: 1.2em
-    margin-top: 0px
-    margin-bottom: 0px
+#help
+    grid-area: help
+    position: sticky
+    top: 0
+    max-height: 90vh
+    overflow: scroll
+    padding: 2px
+    align-self: start
+    > :first-child
+    margin-top: 0px !important
+    h1, h2
+        margin-top: .1em
+        margin-bottom: .3em
+        font-weight: 600
+        line-height: 1.25
+    p, ul, ol
+        margin-top: 0
+        margin-bottom: 16px
+
+    #help li > p
+        margin-bottom: 0px
+
+#applet
+    grid-area: search
+    position: sticky
+    width: 100%
+    top: 0
+    margin-left: auto
+    margin-right: auto
+    display: flex
+    flex-wrap: nowrap
+    flex-direction: column
+    div
+        margin-top: 4px
+        margin-bottom: 4px
 
 #search-controls
-    position: relative
     width: 100%
     max-width: 50em
-    align-items: center
     display: flex
     justify-content: stretch
 
@@ -89,55 +114,6 @@ a
       padding-left: 5px
       padding-right: 5px
 
-
-.content
-    position: absolute
-    top: 28px
-    width: fit-content
-    left: 0
-    background: white
-    right: 0
-    bottom: 0
-    padding: 10px 10px 10px 20px
-    border: 1px solid #ccc
-[type=radio]:checked ~ label
-    background: white
-    border-bottom: 1px solid white
-    z-index: 2
-[type=radio]:checked ~ label ~ .content
-    z-index: 1
-
-#help
-    grid-column: help
-    width: 100%
-    flex-direction: column
-    display: flex
-    justify-content: space-between
-    height: 100%
-    top: 0px
-    > :first-child
-    margin-top: 0px !important
-    h1, h2
-        margin-top: .1em
-        margin-bottom: .3em
-        font-weight: 600
-        line-height: 1.25
-    p, ul, ol
-        margin-top: 0
-        margin-bottom: 16px
-
-    #help li > p
-        margin-bottom: 0px
-
-#applet
-    margin-left: auto
-    margin-right: auto
-    width: 100%
-    display: flex
-    flex-wrap: nowrap
-    flex-direction: column
-    grid-column: search
-    grid-row: 1
 
 #search-container
     display: flex
@@ -195,20 +171,19 @@ a
 #search:hover
     cursor: pointer
 
-.postclick:hover
-    cursor: pointer
+#results-meta
+    width: 100%
+    grid-area: meta
+    display: none
+    span
+        color: $rd
 
 #results
     width: 100%
+    grid-area: results
     font-family: $font-stack
     max-width: 50em
-    font-style: normal
-    font-variant: normal
-    font-weight: normal
     line-height: 1.4
-    display: flex
-    flex-direction: column
-    align-items: center
 
 .tumblr-embed-loaded
     top:0px
@@ -229,10 +204,10 @@ a
     margin-top: 10px
     position: relative
     display: grid
-    grid-template-columns: [content] 542px [nav] 52px
+    grid-template-columns: [content] [nav]
     min-height: 50px
-    padding: 20px
-    background-color: white
+    padding: 10px
+    background-color: $dk
     -webkit-border-radius: 3px
     min-height: fit-content
     -moz-border-radius: 3px
@@ -243,40 +218,6 @@ a
     opacity: 0.6
     margin-left: auto
     margin-right: auto
-
-.loading-icon
-    position: absolute
-    margin-left: 40%
-    margin-top: 5%
-    opacity: 0.2
-    height: 100px
-
-.fadeout
-    opacity: 0
-    transition: 0.25s
-
-.from-date
-    grid-column: nav
-    color: dimgray
-    margin-right: -6px
-    font-size: 0.7em
-
-@media screen and (max-width: 955px)
-
-    #root
-        display: grid
-        grid-template-columns: [search] minmax(12em, 0.3fr) [help] minmax(7em, 1fr) !important
-
-
-@media screen and (max-width: 740px)
-    #container
-        margin-left: auto
-    #root
-        display: grid
-        grid-template-columns: [search] 2em [help]  minmax(7em, 1fr) !important
-    #help
-        display: none
-
 
 .result-preview
     display: none
@@ -300,16 +241,6 @@ a
     font-size: 1.2em
     font-weight: 900
 
-.toggle-this-preview
-    color: gray
-    font-size: 1.7em
-    font-weight: 100
-    flex-shrink: 5.6
-    flex-grow: 0.9
-
-.toggle-this-preview:hover
-    cursor: pointer
-
 .active-preview .active-preview .toggle-this-preview
     color: gray
 
@@ -317,47 +248,45 @@ a
     color: teal
 
 .nav-container
-    grid-column: nav
-    grid-row: 1 / -1
-    width: 100%
     display: flex
     flex-direction: column
-    justify-content: space-around
-    border-left: #0003
-    overflow: unset
-    border-left-style: solid
-    border-left-width: 1px
-    height: 100%
-    padding-left: 0.1em
+    grid-column: nav
+    justify-content: top
+    grid-row: 1 / -1
+    width: 100%
 
-.external-go a
-    text-decoration: none
-    color: gray
+    border-left: $tx
+    border-left-style: solid
+    border-left-width: 2px
+
+    overflow: unset
+    padding-top: 10px
+    padding-left: 0.1em
 
 .nav-container-content
     position: sticky
-    top: 0px
     display: flex
     flex-direction: column
-    justify-content: space-between
+    justify-content: flex-start
+    top: 0px
     bottom: 0px
-    min-height: 7em
+    min-height: 3em
     align-items: center
-    height: 42%
-    max-height: 16em
+
+.toggle-this-preview
+    color: $fg
+    font-size: 1.7em
+    font-weight: 100
+    margin-bottom: 1em
+    &:hover
+        cursor: pointer
 
 .external-go
     font-size: 1.5em
     line-height: 0em
-    flex-grow: 1.1
-
-
-.visible > #tag-filter-input
-    display: block
-    height: 100%
-    font-size: 1em
-    width: 100%
-
+    a
+      text-decoration: none
+      color: $gn
 
 .result-preview iframe
     max-width: 100% !important

@@ -1,15 +1,15 @@
+ <!DOCTYPE html>
 <html>
-
-    <title>xapblr v0.0.1</title>
+    <title>xapblr v0.1.0</title>
     <head>
         <script type="text/javascript" src="static/scripts.js"></script>
         <script>
             {% assets "md" %}
                 function xapblr_onload() {
                     getHTML(' {{ ASSET_URL }} ', (response)=> {
-                        console.log(response)
-                        document.getElementById("help").innerHTML=response
+                        document.querySelector("#help").innerHTML=response
                     })
+                    document.querySelector("#search-form").addEventListener("submit", search)
                 }
             {% endassets %}
         </script>
@@ -17,55 +17,52 @@
         <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }} ">
         {% endassets %}
     </head>
-
     <body onload="javascript:xapblr_onload()">
-
-        <div id="root">
-            <div id="help">
+            <div id="grid">
+                <div id="applet">
+                    <form id="search-form">
+                        <div id="search-container">
+                            <input name="blog" id="username" type="text" placeholder="Username" />
+                            <input name="query" id="query" type="text" placeholder="Search Terms" />
+                            <input type="submit" id="search" value="Search" />
+                        </div>
+                        <div id="search-controls">
+                            <label for="sort-by">Sort by</label>
+                            <select name="sort" id="sort-by">
+                                <option value="newest">newest</option>
+                                <option value="oldest">oldest</option>
+                                <option value="relevance">relevance</option>
+                            </select>
+                            <label for="render">Preview posts using</label>
+                            <select name="render" id="render">
+                                <option value="plain">plain (fastest, ugliest)</option>
+                                <option value="html">basic html (slower, prettier)</option>
+                                <option value="embed">embed (slowest, prettiest)</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div id="results-meta">
+                    Retrieved <span class="count"></span> results in <span
+                        class="time"></span> ms.
+                </div>
+                <div id="results"></div>
+                <div id="help"></div>
             </div>
-
-            <div id="applet">
-                <div id="search-container">
-                    <input id="username" type="text" placeholder="Username">
-                    <input id="query" type="text" placeholder="Search Terms">
-                    <button id="search" value="Search">Search</button>
-                </div>
-                <div id="search-controls">
-                    <label for="sort-by">Sort by</label>
-                    <select id="sort-by">
-                        <option value="newest">newest</option>
-                        <option value="oldest">oldest</option>
-                        <option value="relevance">relevance</option>
-                    </select>
-                    <label for="render">Preview posts using</label>
-                    <select id="render">
-                        <option value="html">basic html (faster, uglier)</option>
-                        <option value="embed">embed (slower, prettier)</option>
-                    </select>
-                </div>
-                <div id="results">
-                </div>
-                <div id="space"></div>
-            </div>
-        </div>
         <div id="templates" style="display:none;">
             <div class="result">
-                <div class="result-siikr nicebars">
-                    <div class="result-title"></div>
+                <div class="result">
                     <div class="result-body"></div>
                     <div class="result-tags"></div>
                 </div>
-                <div class="result-preview nicebars"></div>
+                <div class="result-preview"></div>
                 <div class="nav-container">
                     <div class="nav-container-content">
-                        <div class="eoggle-this-preview">
+                        <div class="toggle-this-preview">
                             &#x1f441;
                         </div>
                         <div class="external-go">
                             <a>&#128279;</a>
-                        </div>
-                        <div class="from-date">
-                            <a><img class='calendar-icon' src='images/calendar-icon.svg'></img></a>
                         </div>
                     </div>
                 </div>
