@@ -2,6 +2,7 @@ from json import loads, dumps
 from requests import get
 from textwrap import wrap
 
+from .utils import get_author
 
 def render_json(post, args):
     return dumps(post)
@@ -18,7 +19,7 @@ def render_plain(post, args):
 def render_plain_one(post, width):
     if len(post["content"]) == 0:
         return ""
-    user = post["blog"]["name"]
+    user = get_author(post)
     out = f"{user}:\n"
     out += "".join(
         [
@@ -41,7 +42,7 @@ def render_md(post, args):
 def render_md_one(post, width):
     if len(post["content"]) == 0:
         return ""
-    user = post["blog"]["name"]
+    user = get_author(post)
     out = f"**{user}:**\n\n"
     out += "".join(
         [render_md_block(block, width) + "\n\n" for block in post["content"]]
@@ -85,7 +86,7 @@ def render_html(post, args):
 def render_html_one(post):
     if len(post["content"]) == 0:
         return ""
-    user = post["blog"]["name"]
+    user = get_author(post)
     out = f'<p class="blog-name">\n\t{user}:\n</p>\n'
     out += "".join(
         ["<p>\n\t" + render_html_block(block) + "\n</p>\n" for block in post["content"]]
