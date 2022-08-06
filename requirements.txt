@@ -1,5 +1,6 @@
 celery
 flask
+flask-assets
 lark
 pytumblr
 xapian

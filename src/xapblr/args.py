@@ -170,16 +170,29 @@ server_parser = subparsers.add_parser(
     "server",
     help="Start web interface.",
     description="""
-    Start web interface.
+    Start web interface. Intended only for development.
+    For production usage, use the xapblr_web service.
     """,
 )
 server_parser.set_defaults(func=server)
+server_parser.add_argument(
+    "--debug",
+    action="store_true",
+    help="""
+    Enable Flask's debug mode. Major security risk, never use in production!
+    """
+)
+server_parser.add_argument(
+    "--host",
+    type=str,
+    help="Host to bind to.",
+)
 server_parser.add_argument(
     "-p",
     "--port",
     type=int,
     metavar="PORT",
-    help="Listen on port %(port)s",
+    help="Listen on port %(metavar)s",
 )
 
 list_parser = subparsers.add_parser("list", help="List indexed blogs")

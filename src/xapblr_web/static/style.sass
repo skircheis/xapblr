@@ -1,0 +1,378 @@
+$bg: #2c2c2e
+$fg: #b2b2b2
+$gy: #3a3a3a
+$cy: #87afaf
+$mg: #d78787
+$hi: #efef8f
+$ac: #a0afa0
+$tx: #040404
+$ia: #8f8f8f
+$yw: #ccdc90
+$gn: #88b090
+$rd: #e89393
+
+$font-stack: 'Helvetica Neue', HelveticaNeue, Helvetica, Arial, sans-serif
+
+body
+    height: 100%
+    background-color: $bg
+    color: $fg
+    margin: 0px
+    overflow: auto
+    font: 100% $font-stack
+    font-style: normal
+    font-variant: normal
+    font-weight: normal
+
+
+img
+    max-width: 100% !important
+    width: auto !important
+    height: auto !important
+
+section
+    height: auto !important
+
+p
+    margin-top: 0em
+    margin-bottom: 0em
+
+a
+    text-decoration: underline
+    cursor: pointer
+    &:link
+        color: $cy
+    &:visited
+        color: $mg
+
+#root
+    display: grid
+    column-gap: 1em
+    margin: 1em
+    grid-template-columns: [search] minmax(7em, 1fr) [help] minmax(32em, 0.5fr)
+    position: relative
+    /*min-height: 100%;*/
+
+
+#previews
+    flex-grow: 1
+    flex-shrink: 3.8
+    flex-basis: 12em
+    padding: 10px
+    width: 97%
+    font-size: 1.2em
+    margin-top: 0px
+    margin-bottom: 0px
+
+#search-controls
+    position: relative
+    width: 100%
+    max-width: 50em
+    align-items: center
+    display: flex
+    justify-content: stretch
+
+    &, select
+        font-family: $font-stack
+        font-weight: bolder
+    select
+        color: $tx
+        padding-top: 3px
+        background-color: $cy
+        border-width: 2px
+        flex-basis: 5em
+        flex-shrink: 2
+        border-style: solid
+        border-color: $tx
+        text-align: left
+    label
+      padding-left: 5px
+      padding-right: 5px
+
+
+.content
+    position: absolute
+    top: 28px
+    width: fit-content
+    left: 0
+    background: white
+    right: 0
+    bottom: 0
+    padding: 10px 10px 10px 20px
+    border: 1px solid #ccc
+[type=radio]:checked ~ label
+    background: white
+    border-bottom: 1px solid white
+    z-index: 2
+[type=radio]:checked ~ label ~ .content
+    z-index: 1
+
+#help
+    grid-column: help
+    width: 100%
+    flex-direction: column
+    display: flex
+    justify-content: space-between
+    height: 100%
+    top: 0px
+    > :first-child
+    margin-top: 0px !important
+    h1, h2
+        margin-top: .1em
+        margin-bottom: .3em
+        font-weight: 600
+        line-height: 1.25
+    p, ul, ol
+        margin-top: 0
+        margin-bottom: 16px
+
+    #help li > p
+        margin-bottom: 0px
+
+#applet
+    margin-left: auto
+    margin-right: auto
+    width: 100%
+    display: flex
+    flex-wrap: nowrap
+    flex-direction: column
+    grid-column: search
+    grid-row: 1
+
+#search-container
+    display: flex
+    width: 100%
+    max-width: 50em
+    justify-content: stretch
+    flex-direction: row
+    margin-top: 8px
+    > *
+      font-size: 1.2em
+      margin-right: 4px
+      margin-top: 0px
+      margin-bottom: 0px
+
+#username
+    flex-grow: 1
+    flex-shrink: 3.8
+    flex-basis: 12em
+    width: 100%
+
+#query
+    flex-grow: 9
+    width: 100%
+    flex-basis: 12em
+    flex-shrink: 1.5
+
+#search
+    background-color: $gn
+
+    min-height: 2em
+
+    display: inline-flex
+    justify-content: center
+    align-items: center
+    --padding-x: 1.2em
+    padding: 0.5em var(--ppadding-x)
+    padding: 0
+
+    text-align: center
+
+    flex-basis: 5em
+    flex-grow: 0.15
+    flex-shrink: 2
+
+    border-style: solid
+    border-width: 2px
+    border-color: $tx
+
+    font-size: 1.2em
+    line-height: 1.44
+    font-family: $font-stack
+    font-weight: bolder
+    color: $tx
+
+#search:hover
+    cursor: pointer
+
+.postclick:hover
+    cursor: pointer
+
+#results
+    width: 100%
+    font-family: $font-stack
+    max-width: 50em
+    font-style: normal
+    font-variant: normal
+    font-weight: normal
+    line-height: 1.4
+    display: flex
+    flex-direction: column
+    align-items: center
+
+.tumblr-embed-loaded
+    top:0px
+    margin: 0px !important
+    z-index:2
+
+.tumblr-embed:not(.tumblr-embed-loaded)
+    position: absolute
+    top:0px
+    margin: 0px !important
+    z-index:-2
+
+.quickPreview
+    position:  absolute
+    margin: 20px
+
+.result
+    margin-top: 10px
+    position: relative
+    display: grid
+    grid-template-columns: [content] 542px [nav] 52px
+    min-height: 50px
+    padding: 20px
+    background-color: white
+    -webkit-border-radius: 3px
+    min-height: fit-content
+    -moz-border-radius: 3px
+    border-radius: 3px
+
+.calendar-icon
+    height: 35px !important
+    opacity: 0.6
+    margin-left: auto
+    margin-right: auto
+
+.loading-icon
+    position: absolute
+    margin-left: 40%
+    margin-top: 5%
+    opacity: 0.2
+    height: 100px
+
+.fadeout
+    opacity: 0
+    transition: 0.25s
+
+.from-date
+    grid-column: nav
+    color: dimgray
+    margin-right: -6px
+    font-size: 0.7em
+
+@media screen and (max-width: 955px)
+
+    #root
+        display: grid
+        grid-template-columns: [search] minmax(12em, 0.3fr) [help] minmax(7em, 1fr) !important
+
+
+@media screen and (max-width: 740px)
+    #container
+        margin-left: auto
+    #root
+        display: grid
+        grid-template-columns: [search] 2em [help]  minmax(7em, 1fr) !important
+    #help
+        display: none
+
+
+.result-preview
+    display: none
+
+.active-preview
+    display: none
+
+.active-preview .active-preview
+    display: block
+
+.active-preview .result-preview
+    display: block !important
+    height: 100%
+
+.active-preview .active-preview .result-preview
+    display: none !important
+
+.result-title
+    grid-row: title
+    height: fit-content
+    font-size: 1.2em
+    font-weight: 900
+
+.toggle-this-preview
+    color: gray
+    font-size: 1.7em
+    font-weight: 100
+    flex-shrink: 5.6
+    flex-grow: 0.9
+
+.toggle-this-preview:hover
+    cursor: pointer
+
+.active-preview .active-preview .toggle-this-preview
+    color: gray
+
+.active-preview .toggle-this-preview
+    color: teal
+
+.nav-container
+    grid-column: nav
+    grid-row: 1 / -1
+    width: 100%
+    display: flex
+    flex-direction: column
+    justify-content: space-around
+    border-left: #0003
+    overflow: unset
+    border-left-style: solid
+    border-left-width: 1px
+    height: 100%
+    padding-left: 0.1em
+
+.external-go a
+    text-decoration: none
+    color: gray
+
+.nav-container-content
+    position: sticky
+    top: 0px
+    display: flex
+    flex-direction: column
+    justify-content: space-between
+    bottom: 0px
+    min-height: 7em
+    align-items: center
+    height: 42%
+    max-height: 16em
+
+.external-go
+    font-size: 1.5em
+    line-height: 0em
+    flex-grow: 1.1
+
+
+.visible > #tag-filter-input
+    display: block
+    height: 100%
+    font-size: 1em
+    width: 100%
+
+
+.result-preview iframe
+    max-width: 100% !important
+    width: 100% !important
+
+.result-body
+    height: 100%
+    grid-row: body
+
+.result-tags
+    grid-row: tags
+    color: #00000067
+
+.discluded
+    display: none
+
+a.taglink
+    padding-right: 15px

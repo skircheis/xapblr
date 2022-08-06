@@ -1,4 +1,5 @@
-import flask
+from xapblr_web import app
 
 def server(args):
-    raise NotImplementedError
+    app.run(host = args.host, port = args.port, debug=args.debug)
+    #raise NotImplementedError
