@@ -48,6 +48,13 @@ function display_results(results) {
         body = template.querySelector(".result-body")
         body.innerHTML = res["rendered"];
         target.appendChild(template);
+        tag_target = template.querySelector(".result-tags")
+        res["tags"].forEach( tag => {
+            tag_template = document.querySelector("#templates .tag").cloneNode();
+            tag_template.innerHTML = "#" + tag;
+            tag_template.href = "https://tumblr.com/blog/view/" + res["blog_name"] + "/tagged/" + tag;
+            tag_target.appendChild(tag_template);
+        });
     }
     );
 }

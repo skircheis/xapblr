@@ -204,7 +204,7 @@ a
     margin-top: 10px
     position: relative
     display: grid
-    grid-template-columns: [content] [nav]
+    grid-template-areas: "body nav" "tags nav"
     min-height: 50px
     padding: 10px
     background-color: $dk
@@ -294,14 +294,14 @@ a
 
 .result-body
     height: 100%
-    grid-row: body
+    grid-area: body
 
 .result-tags
-    grid-row: tags
-    color: #00000067
+    grid-area: tags
+    a, a:visited
+      color: $cy
+      padding-right: 15px
 
 .discluded
     display: none
 
-a.taglink
-    padding-right: 15px
