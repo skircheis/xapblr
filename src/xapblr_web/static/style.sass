@@ -207,45 +207,37 @@ a
     grid-template-areas: "body nav" "tags nav"
     min-height: 50px
     padding: 10px
+    column-gap: 8px
     background-color: $dk
     -webkit-border-radius: 3px
     min-height: fit-content
     -moz-border-radius: 3px
     border-radius: 3px
 
-.calendar-icon
-    height: 35px !important
-    opacity: 0.6
-    margin-left: auto
-    margin-right: auto
+.external-go
+    font-size: 1.5em
+    line-height: 0em
+    a
+      text-decoration: none
+      color: $gn
 
 .result-preview
-    display: none
-
-.active-preview
-    display: none
-
-.active-preview .active-preview
-    display: block
-
-.active-preview .result-preview
     display: block !important
     height: 100%
 
-.active-preview .active-preview .result-preview
-    display: none !important
+.result-preview iframe
+    max-width: 100% !important
+    width: 100% !important
 
-.result-title
-    grid-row: title
-    height: fit-content
-    font-size: 1.2em
-    font-weight: 900
+.result-body
+    height: 100%
+    grid-area: body
 
-.active-preview .active-preview .toggle-this-preview
-    color: gray
-
-.active-preview .toggle-this-preview
-    color: teal
+.result-tags
+    grid-area: tags
+    a, a:visited
+      color: $cy
+      padding-right: 15px
 
 .nav-container
     display: flex
@@ -273,35 +265,10 @@ a
     min-height: 3em
     align-items: center
 
-.toggle-this-preview
+.toggle
     color: $fg
     font-size: 1.7em
     font-weight: 100
     margin-bottom: 1em
     &:hover
         cursor: pointer
-
-.external-go
-    font-size: 1.5em
-    line-height: 0em
-    a
-      text-decoration: none
-      color: $gn
-
-.result-preview iframe
-    max-width: 100% !important
-    width: 100% !important
-
-.result-body
-    height: 100%
-    grid-area: body
-
-.result-tags
-    grid-area: tags
-    a, a:visited
-      color: $cy
-      padding-right: 15px
-
-.discluded
-    display: none
-
