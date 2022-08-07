@@ -20,7 +20,7 @@ def search_command(args):
 
 class TagProcessor(FieldProcessor):
     def __call__(self, args):
-        return Query(prefixes["tag"] + urlencode(args))
+        return Query(prefixes["tag"] + urlencode(args.lower()))
 
 
 def search(args):

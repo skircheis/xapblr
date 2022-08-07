@@ -43,7 +43,7 @@ def index_post(post, tg):
 
     for t in post["tags"]:
         # xapian will never put a space in a term but we can just urlencode
-        doc.add_term(prefixes["tag"] + urlencode(t))
+        doc.add_term(prefixes["tag"] + urlencode(t.lower()))
 
     doc.add_value(0, sortable_serialise(post["timestamp"]))
     doc.set_data(dumps(post))
