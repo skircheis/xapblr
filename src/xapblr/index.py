@@ -15,14 +15,48 @@ from xapian import (
 
 from time import sleep
 
-from urllib.parse import quote as urlencode
+from urllib.parse import quote as urlencode, urlparse
 
 from .search import get_latest
 from .utils import get_api_key, get_author, get_db, format_timestamp, prefixes
 
+def index_text(block, tg):
+    tg.index_text(block["text"])
+
+def index_link(block, tg):
+    doc = tg.get_document()
+    url_prefix = "https://href.li/?"
+    url = block["url"].removeprefix(url_prefix)
+    domain = urlparse(url).hostname
+    while True:
+        doc.add_term(prefixes["link"] + domain)
+        try:
+            sep = domain.index(".")
+            domain = domain[sep+1:]
+        except ValueError:
+            break
+    tg.index_text(block["description"])
+
+def index_image(block, tg):
+    try:
+        tg.index_text(block["alt_text"])
+    except KeyError:
+        pass
+
+
+block_indexers = {
+    "text": index_text,
+    "link": index_link,
+    "image": index_image,
+}
+
 
 def index_content(post, tg):
-    [tg.index_text(c["text"]) for c in post["content"] if c["type"] == "text"]
+    for block in post["content"]:
+        try:
+            block_indexers[block["type"]](block, tg)
+        except KeyError:
+            pass
     doc = tg.get_document()
     doc.add_term(prefixes["author"] + get_author(post))
 

@@ -12,6 +12,7 @@ prefixes = {
     "tag": "K",
     "url": "U",
     "timestamp": "D",
+    "link": "XL",
 }
 
 

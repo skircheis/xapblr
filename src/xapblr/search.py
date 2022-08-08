@@ -22,7 +22,6 @@ class TagProcessor(FieldProcessor):
     def __call__(self, args):
         return Query(prefixes["tag"] + urlencode(args.lower()))
 
-
 def search(args):
 
     db = get_db(args.blog, "r")
@@ -31,6 +30,7 @@ def search(args):
     qp.set_default_op(Query.OP_AND)
     qp.add_boolean_prefix("author", prefixes["author"])
     qp.add_boolean_prefix("op", prefixes["op"])
+    qp.add_boolean_prefix("link", prefixes["link"])
     qp.add_boolean_prefix("tag", TagProcessor())
     qstr = " ".join(getattr(args, "search-term"))
     query = qp.parse_query(qstr)
