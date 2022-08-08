@@ -21,6 +21,10 @@ The default connective is `AND`.
     Match posts made between `<since>` and `<until>`
 
     `xapblr` aims to support the same date and time search as `notmuch`; see the [`notmuch` documentation](https://notmuchmail.org/doc/latest/man7/notmuch-search-terms.html#date-and-time-search) for details.
+* `link:<domain>`
+    Match posts that link to `<domain>` or any of its subdomains. E.g.,
+    `link:wikipedia.org` matches both posts with links to `en.wikipedia.org`
+    and `jp.wikipedia.org.`
 
 ## Caveats
 
