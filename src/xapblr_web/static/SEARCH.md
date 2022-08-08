@@ -11,6 +11,7 @@ The default connective is `AND`.
 
 * `<word-or-quoted-phrase>`
     Match terms in the bodies of posts.
+    Image alt texts are also indexed.
 * `op:<blog-name>`
     Match posts where the root post is from `<blog-name>`.
 * `author:<blog-name>`
