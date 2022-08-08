@@ -27,7 +27,20 @@ owner.
 `xapblr` stores its data in `$XDG_DATA_HOME/share/xapblr/`; by default this
 should be `~/.local/share/xapblr`.
 
-systemd units are provided for regular re-indexing.
+`systemd` units are provided for regular re-indexing.
+
+## Usage
+
+See `xapblr help` for detailed usage, and `SEARCH.md` for how to form search
+queries.
+
+## Web interface
+
+`xapblr` provides a web interface for convenience.  A *development* version can
+be launched with `xapblr server'; By default it resides on `localhost:5000`.
+
+A future version will provide a *production* version, suitable to run e.g. with
+`systemd`.
 
 ## Initialization and rate-limiting
 
@@ -49,4 +62,5 @@ posts that you know have been edited on Tumblr, pass suitable options to
  * Python 3
  * `pytumblr`
  * `xapian`
+ * `flask` and `flask-assets` for the web interface)
  * `lark`
