@@ -31,13 +31,23 @@ should be `~/.local/share/xapblr`.
 
 ## Usage
 
-See `xapblr help` for detailed usage, and `SEARCH.md` for how to form search
+See `xapblr --help` for detailed usage, and `SEARCH.md` for how to form search
 queries.
+
+
+## Rebuilding
+
+As `xapblr` is developed the indexing of posts may change to fix bugs or add
+features. To allow for this all post data is saved in the database, meaning the
+index can be rebuilt from local data only.
+
+`xapblr` uses semantic versioning and changes to indexing imply a minor version increase.
+It is recommended to run `xapblr rebuild` after each minor version increase.
 
 ## Web interface
 
 `xapblr` provides a web interface for convenience.  A *development* version can
-be launched with `xapblr server'; By default it resides on `localhost:5000`.
+be launched with `xapblr server`; By default it resides on `localhost:5000`.
 
 A future version will provide a *production* version, suitable to run e.g. with
 `systemd`.
