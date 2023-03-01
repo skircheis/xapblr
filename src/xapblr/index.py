@@ -142,6 +142,8 @@ def index(args):
     if not args.throttle:
         throttle = 0
 
+    pages = 1
+    commit_every = 10
     while fetch:
         response = client.posts(args.blog, npf=True, **kwargs)
         posts = response["posts"]
@@ -155,12 +157,17 @@ def index(args):
             db.replace_document(id_term, post_doc)
             kwargs["before"] = p["timestamp"]
 
-        print(".", end="", flush=True)
+        if pages % commit_every == 0:
+            print("*", end="", flush=True)
+            db.commit()
+        else:
+            print(".", end="", flush=True)
         if "_links" not in response.keys():
             break
         if args.since is not None and args.since >= kwargs["before"]:
             break
 
+        pages += 1
         sleep(throttle)
 
     print()
