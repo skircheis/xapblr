@@ -1,0 +1,8 @@
+[Unit]
+Description=Web interface to xapblr, a local index of Tumblr blogs
+
+[Service]
+ExecStart=uwsgi --http 127.0.0.1:5000 --master --plugin python -p 1 -w xapblr_web:app
+Environment="XDG_CONFIG_HOME=%h/.config;XDG_DATA_HOME/.local/share"
+Restart=on-failure
+RestartSec=60
