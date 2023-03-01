@@ -2,7 +2,7 @@ from json import load
 from os import environ
 from pathlib import Path
 
-from xapian import Database, WritableDatabase, DB_CREATE_OR_OPEN
+from xapian import Database, WritableDatabase, DatabaseNotFoundError, DB_CREATE_OR_OPEN
 
 prefixes = {
     "content": "XC",
@@ -41,7 +41,14 @@ def get_db(blog, mode="r"):
     if mode == "w":
         return WritableDatabase(db_path_str, DB_CREATE_OR_OPEN)
     else:
-        return Database(db_path_str, DB_CREATE_OR_OPEN)
+        try:
+            return Database(db_path_str, DB_CREATE_OR_OPEN)
+        except DatabaseNotFoundError:
+            # if the database does not already exist, it must be created
+            # writable
+            db = WritableDatabase(db_path_str, DB_CREATE_OR_OPEN)
+            db.close()
+            return Database(db_path_str, DB_CREATE_OR_OPEN)
 
 
 def get_author(post):
