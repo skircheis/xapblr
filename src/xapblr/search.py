@@ -59,7 +59,7 @@ def search(args):
         offset += pagesize
 
 
-def get_latest(src):
+def get_end(src, latest=True):
     if type(src) == str:
         db = get_db(src)
     elif isinstance(src, Database):
@@ -71,6 +71,12 @@ def get_latest(src):
 
     enq = Enquire(db)
     enq.set_query(Query.MatchAll)
-    enq.set_sort_by_value_then_relevance(0, True)
+    enq.set_sort_by_value_then_relevance(0, latest)
     latest = enq.get_mset(0, 1)[0].document
     return sortable_unserialise(latest.get_value(0))
+
+def get_latest(src):
+    return get_end(src, True)
+
+def get_earliest(src):
+    return get_end(src, False)
