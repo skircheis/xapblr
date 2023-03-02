@@ -1,9 +1,10 @@
 from argparse import Namespace
-from flask import render_template, request, Response
+from flask import render_template, request, Response, send_from_directory
 from json import dumps
 from time import time_ns
 from xapblr_web import app
 
+from .utils import get_data_dir
 
 @app.route("/")
 def index():
@@ -17,6 +18,9 @@ def list_blogs():
     args = Namespace()
     return dumps(list(l(args)))
 
+@app.route('/assets/<path:path>')
+def send_static(path):
+    return send_from_directory(str(get_data_dir() / ".webstatic"), path)
 
 @app.route("/search", methods=["POST"])
 def search():

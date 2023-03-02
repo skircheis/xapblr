@@ -2,7 +2,9 @@
 <html>
     <title>xapblr v0.1.0</title>
     <head>
-        <script type="text/javascript" src="static/scripts.js"></script>
+        {% assets "js" %}
+        <script type="text/javascript" src="{{ ASSET_URL }} "></script>
+        {% endassets %}
         <script>
             {% assets "md" %}
                 function xapblr_onload() {
