@@ -4,4 +4,4 @@ Description=Locally index a Tumblr blog, hourly.
 [Timer]
 OnCalendar=hourly
 Persistent=true
-Unit=xapblr@$i.service
+Unit=xapblr@%i.service
