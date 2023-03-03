@@ -44,7 +44,7 @@ search_parser = subparsers.add_parser(
     """,
     description="""
     Search an indexed blog.
-    Query format resembles notmutt; see README for details.
+    Query format resembles notmuch; see README for details.
     """,
 )
 search_parser.set_defaults(func=search_command)
