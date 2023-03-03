@@ -20,7 +20,7 @@ class StoreDateAction(Action):
 
 
 argparser = ArgumentParser(prog="xapblr")
-subparsers = argparser.add_subparsers(title="Tasks")
+subparsers = argparser.add_subparsers(title="Tasks", required=True)
 
 index_parser = subparsers.add_parser(
     "index",
