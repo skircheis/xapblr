@@ -3,6 +3,7 @@ from xapian import Enquire, Query, TermGenerator
 from .index import index_post
 from .utils import get_db
 
+
 def rebuild(args):
     db = get_db(args.blog, "w")
     count = db.get_doccount()

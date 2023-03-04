@@ -20,8 +20,10 @@ from urllib.parse import quote as urlencode, urlparse
 from .search import get_latest
 from .utils import get_api_key, get_author, get_db, format_timestamp, prefixes
 
+
 def index_text(block, tg):
     tg.index_text(block["text"])
+
 
 def index_link(block, tg):
     doc = tg.get_document()
@@ -32,10 +34,11 @@ def index_link(block, tg):
         doc.add_term(prefixes["link"] + domain)
         try:
             sep = domain.index(".")
-            domain = domain[sep+1:]
+            domain = domain[sep + 1 :]
         except ValueError:
             break
     tg.index_text(block["description"])
+
 
 def index_image(block, tg):
     try:
@@ -89,7 +92,6 @@ def index_post(post, tg):
 
 
 def index(args):
-
     api_key = get_api_key()
     client = pytumblr.TumblrRestClient(**api_key)
     kwargs = {}

@@ -4,6 +4,7 @@ from textwrap import wrap
 
 from .utils import get_author
 
+
 def render_json(post, args):
     return dumps(post)
 

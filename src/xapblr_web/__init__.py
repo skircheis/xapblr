@@ -5,10 +5,12 @@ from pathlib import Path
 
 from .utils import get_data_dir
 
+
 def pandoc_filter(_in, out, **kwargs):
     cmd = ["pandoc", "--to", "html"]
     pandoc = Popen(cmd, stdin=PIPE, stdout=PIPE, text=True)
     out.write((pandoc.communicate(_in.read()))[0])
+
 
 data_dir = get_data_dir()
 static_dir = data_dir / ".webstatic"

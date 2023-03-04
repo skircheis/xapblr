@@ -66,6 +66,7 @@ def search(args):
                 doc = match.document
                 post_json = doc.get_data().decode("utf-8")
                 yield loads(post_json)
+
         match_iter = match_iterf()
 
     return (meta, match_iter)
