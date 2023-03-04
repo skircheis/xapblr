@@ -3,12 +3,12 @@
     <title>xapblr v0.1.0</title>
     <head>
         {% assets "js" %}
-        <script type="text/javascript" src="{{ ASSET_URL }} "></script>
+        <script type="text/javascript" src="{{ASSET_URL}}"></script>
         {% endassets %}
         <script>
             {% assets "md" %}
                 function xapblr_onload() {
-                    getHTML(' {{ ASSET_URL }} ', (response)=> {
+                    getHTML('{{ASSET_URL}}', (response)=> {
                         document.querySelector("#help").innerHTML=response
                     })
                     document.querySelector("#search-form").addEventListener("submit", search)
@@ -16,7 +16,7 @@
             {% endassets %}
         </script>
         {% assets "css" %}
-        <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }} ">
+        <link rel="stylesheet" type="text/css" href="{{ASSET_URL}} ">
         {% endassets %}
     </head>
     <body onload="javascript:xapblr_onload()">
