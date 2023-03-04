@@ -55,9 +55,9 @@ var paginated = target.querySelector("#results-meta-paginated");
     var set_time =  (container) => {
         container.querySelector(".time").innerHTML = Math.round(meta["time_ns"] / 1e6);
     } ;
-    pager.value = pages;
     if ( meta["offset"] > meta["matches"] ) {
         var search_form = document.querySelector("#search-form");
+        pager.value = pages;
         paginate(search_form);
     } else if (meta["count"] < meta["matches"] ){
         paginated.style.display = "block";
