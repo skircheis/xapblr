@@ -54,9 +54,9 @@ label
     margin: 1em
     column-gap: 1em
     grid-template-rows: min-content 1fr
-    grid-template-columns: 62% 38%
+    grid-template-columns: 1fr 25em
     grid-template-areas: "search help" "results help"
-    max-width: 1080px
+    width: min(1080px, 100vw)
     overflow: auto
     height: 100vh
 
@@ -66,7 +66,7 @@ label
     position: sticky
     top: 0
     max-height: 90vh
-    overflow: scroll
+    overflow-y: scroll
     padding: 2px
     align-self: start
     > :first-child
