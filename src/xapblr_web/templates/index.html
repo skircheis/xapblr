@@ -21,6 +21,13 @@
                     }
                     var pager = document.querySelector("#page");
                     pager.addEventListener("input", () => paginate(search_form));
+
+                     window.addEventListener("popstate",
+                        (event) => {
+                            set_search_form(search_form, event.state, true);
+                            search(search_form, false);
+                        }
+                    )
                 }
             {% endassets %}
         </script>

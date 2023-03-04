@@ -17,10 +17,17 @@ function submit_handler(event){
     search(event.target);
 }
 
-function search(form) {
+function search(form, push_state = true) {
     const formData = new FormData(form)
     const data = Object.fromEntries(formData.entries());
     cached_search = formData;
+    if (push_state) {
+        var url = "/" + formData.get("blog") + "/" + formData.get("query")
+        if ( formData.get("page") > 1 ) {
+            url += "/page/" + formData.get("page")
+        }
+        history.pushState(formData, "", url);
+    }
     fetch("/search",
         {method: "POST",
             headers: {
@@ -37,11 +44,19 @@ function search(form) {
     )
 }
 
-function paginate(form) {
+function set_search_form(form, formData, page) {
     var blog = form.querySelector("#blog");
     var query = form.querySelector("#query");
-    blog.value = cached_search.get("blog");
-    query.value = cached_search.get("query");
+    blog.value = formData.get("blog");
+    query.value = formData.get("query");
+    if (page) {
+        var pager = form.querySelector("#page");
+        pager.value = formData.get("page");
+    }
+}
+
+function paginate(form) {
+    set_search_form(form, cached_search, false);
     search(form);
 }
 
