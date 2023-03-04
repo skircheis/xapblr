@@ -53,11 +53,12 @@ label
     display: grid
     margin: 1em
     column-gap: 1em
-    row-gap: 1em
-    grid-template-rows: min-content min-content 1fr
+    grid-template-rows: min-content 1fr
     grid-template-columns: 62% 38%
     grid-template-areas: "search help" "results help"
     max-width: 1080px
+    overflow: auto
+    height: 100vh
 
 
 #help
@@ -85,10 +86,13 @@ label
 #applet
     grid-area: search
     position: sticky
+    background-color: $bg
+    z-index: 99
     width: 100%
     top: 0
     margin-left: auto
     margin-right: auto
+    padding-bottom: 10px
     display: flex
     flex-wrap: nowrap
     flex-direction: column
@@ -268,7 +272,7 @@ label
     display: flex
     flex-direction: column
     justify-content: flex-start
-    top: 0px
+    top: 115px
     bottom: 0px
     min-height: 3em
     align-items: center
