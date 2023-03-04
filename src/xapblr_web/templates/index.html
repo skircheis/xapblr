@@ -12,12 +12,16 @@
                         document.querySelector("#help").innerHTML=response
                     })
                     var search_form = document.querySelector("#search-form");
+                    var blog = document.querySelector("#blog");
+                    var query = document.querySelector("#query");
                     search_form.addEventListener("submit", submit_handler)
-                    if(
-                        document.querySelector("#query").value != "" &&
-                        document.querySelector("#blog").value != ""
-                    ){
-                        search(search_form);
+                    if( blog.value != "" ){
+                        query.focus();
+                        if(  query.value != ""){
+                            search(search_form);
+                        }
+                    } else {
+                        blog.focus();
                     }
                     var pager = document.querySelector("#page");
                     pager.addEventListener("input", () => paginate(search_form));
