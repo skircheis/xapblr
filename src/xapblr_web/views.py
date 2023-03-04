@@ -55,7 +55,6 @@ def search():
     res = search(args)
     out = {"results": [], "meta": res[0]}
     for m in res[1]:
-        print(m)
         m["rendered"] = renderer(m, args)
         [m.pop(k) for k in ["content", "trail", "blog"]]
         m["timestamp_hf"] = format_timestamp(m["timestamp"])
