@@ -12,8 +12,10 @@ from urllib.parse import quote as urlencode
 from .render import renderers
 from .utils import format_timestamp, get_db, prefixes
 
+
 def search_command(args):
-    for m in search(args):
+    res = search(args)
+    for m in res[1]:
         out = renderers[args.renderer](m, args)
         print(out)
 
@@ -22,7 +24,12 @@ class TagProcessor(FieldProcessor):
     def __call__(self, args):
         return Query(prefixes["tag"] + urlencode(args.lower()))
 
+
 def search(args):
+    """
+    Returns a tuple (meta, iter) where meta is a dict containing meta
+    information about the MSet, and iter is an iterator over the matches
+    """
 
     db = get_db(args.blog, "r")
     qp = QueryParser()
@@ -42,21 +49,26 @@ def search(args):
     elif args.sort == "relevance":
         pass
     enq.set_query(query)
-    offset = 0
-    pagesize = 100
-    count = 0
-    while True:
-        matches = enq.get_mset(offset, pagesize)
-        if matches.empty():
-            break
-        for match in matches:
-            doc = match.document
-            post_json = doc.get_data().decode("utf-8")
-            yield loads(post_json)
-            count += 1
-            if args.limit is not None and count >= args.limit:
-                return
-        offset += pagesize
+    offset = args.offset or 0
+    pagesize = args.limit or 50
+    matches = enq.get_mset(offset, pagesize)
+    meta = {
+        "offset": offset,
+        "pagesize": pagesize,
+        "matches": matches.get_matches_estimated(),
+    }
+    if matches.empty():
+        match_iter = iter([])
+    else:
+
+        def match_iterf():
+            for match in matches:
+                doc = match.document
+                post_json = doc.get_data().decode("utf-8")
+                yield loads(post_json)
+        match_iter = match_iterf()
+
+    return (meta, match_iter)
 
 
 def get_end(src, latest=True):
@@ -75,8 +87,10 @@ def get_end(src, latest=True):
     latest = enq.get_mset(0, 1)[0].document
     return sortable_unserialise(latest.get_value(0))
 
+
 def get_latest(src):
     return get_end(src, True)
+
 
 def get_earliest(src):
     return get_end(src, False)

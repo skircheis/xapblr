@@ -133,16 +133,27 @@ search_parser.add_argument(
     to %(metavar)s pixels wide as possible. Has no effect on json, html, or
     embed output.
     Default: 80 (plain), 540 (md).
-    """
+    """,
 )
 search_parser.add_argument(
     "-l",
     "--limit",
     type=int,
     help="""
-    Maximum results to return.
+    Return at most %(metavar)s results
     """,
+    metavar="N",
     default=None,
+)
+search_parser.add_argument(
+    "-o",
+    "--offset",
+    type=int,
+    metavar="N",
+    help="""
+    Skip the first %(metavar)s results
+    """,
+    default=0,
 )
 search_parser.add_argument(
     "--verbatim",
@@ -180,7 +191,7 @@ server_parser.add_argument(
     action="store_true",
     help="""
     Enable Flask's debug mode. Major security risk, never use in production!
-    """
+    """,
 )
 server_parser.add_argument(
     "--host",

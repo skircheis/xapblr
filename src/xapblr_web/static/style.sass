@@ -45,6 +45,10 @@ a
     &:visited
         color: $mg
 
+label
+  font-weight: bolder
+  padding-right: 5px
+
 #grid
     display: grid
     margin: 1em
@@ -52,7 +56,7 @@ a
     row-gap: 1em
     grid-template-rows: min-content min-content 1fr
     grid-template-columns: 62% 38%
-    grid-template-areas: "search help" "meta help" "results help"
+    grid-template-areas: "search help" "results help"
     max-width: 1080px
 
 
@@ -88,7 +92,7 @@ a
     display: flex
     flex-wrap: nowrap
     flex-direction: column
-    div
+    > form > div
         margin-top: 4px
         margin-bottom: 4px
 
@@ -97,13 +101,14 @@ a
     max-width: 50em
     display: flex
     justify-content: stretch
+    padding-top: 4px
 
     &, select
         font-family: $font-stack
         font-weight: bolder
     select
         color: $tx
-        padding-top: 3px
+        margin-right: 10px
         background-color: $cy
         border-width: 2px
         flex-basis: 5em
@@ -111,10 +116,6 @@ a
         border-style: solid
         border-color: $tx
         text-align: left
-    label
-      padding-left: 5px
-      padding-right: 5px
-
 
 #search-container
     display: flex
@@ -174,10 +175,12 @@ a
 
 #results-meta
     width: 100%
-    grid-area: meta
     display: none
     span
         color: $rd
+
+#results-meta > div
+    display: none
 
 #results
     width: 100%

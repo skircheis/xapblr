@@ -11,7 +11,16 @@
                     getHTML('/{{ASSET_URL}}', (response)=> {
                         document.querySelector("#help").innerHTML=response
                     })
-                    document.querySelector("#search-form").addEventListener("submit", search)
+                    var search_form = document.querySelector("#search-form");
+                    search_form.addEventListener("submit", submit_handler)
+                    if(
+                        document.querySelector("#query").value != "" &&
+                        document.querySelector("#blog").value != ""
+                    ){
+                        search(search_form);
+                    }
+                    var pager = document.querySelector("#page");
+                    pager.addEventListener("input", () => paginate(search_form));
                 }
             {% endassets %}
         </script>
@@ -22,31 +31,45 @@
     <body onload="javascript:xapblr_onload()">
             <div id="grid">
                 <div id="applet">
-                    <form id="search-form">
-                        <div id="search-container">
-                            <input name="blog" id="username" type="text" placeholder="Username" />
-                            <input name="query" id="query" type="text" placeholder="Search Terms" />
-                            <input type="submit" id="search" value="Search" />
+                <form id="search-form">
+                    <div id="search-container">
+                        <input name="blog" id="blog" type="text" placeholder="Username" {% if blog %} value="{{blog}}" {%endif%} />
+                        <input name="query" id="query" type="text" placeholder="Search Terms" {% if query %} value="{{query}}" {%endif%}  />
+                        <input type="submit" id="search" value="Search" />
+                    </div>
+                    <div id="search-controls">
+                        <label for="sort-by">Sort by</label>
+                        <select name="sort" id="sort-by">
+                            <option value="newest">newest</option>
+                            <option value="oldest">oldest</option>
+                            <option value="relevance">relevance</option>
+                        </select>
+                        <label for="render">Preview posts using</label>
+                        <select name="render" id="render">
+                            <option value="plain">plain (fastest, ugliest)</option>
+                            <option value="html" selected="selected">basic html (slower, prettier)</option>
+                            <option value="embed">embed (slowest, prettiest)</option>
+                        </select>
+                    </div>
+                    <div id="results-meta">
+                        <div id="results-meta-complete">
+                            Retrieved <span class="count"></span> results in <span class="time"></span> ms.
                         </div>
-                        <div id="search-controls">
-                            <label for="sort-by">Sort by</label>
-                            <select name="sort" id="sort-by">
-                                <option value="newest">newest</option>
-                                <option value="oldest">oldest</option>
-                                <option value="relevance">relevance</option>
-                            </select>
-                            <label for="render">Preview posts using</label>
-                            <select name="render" id="render">
-                                <option value="plain">plain (fastest, ugliest)</option>
-                                <option value="html" selected="selected">basic html (slower, prettier)</option>
-                                <option value="embed">embed (slowest, prettiest)</option>
-                            </select>
+
+                        <div id="results-meta-paginated">
+                            <div style="float: left;">
+                            Retrieved results
+                                <span class="match_start"></span>‒<span class="match_end"></span>
+                                of <span class="matches_total"></span>
+                                in <span class="time"></span> ms.
+                            </div>
+                            <div style="float: right;">
+                                <label id="number-label" for="page">Go to page</label>
+                                <input type="number" name="page" style="width: 5em" id="page" min="1" value="{{page}}" />
+                            </div>
                         </div>
-                    </form>
-                </div>
-                <div id="results-meta">
-                    Retrieved <span class="count"></span> results in <span
-                        class="time"></span> ms.
+                    </div>
+                </form>
                 </div>
                 <div id="results"></div>
                 <div id="help"></div>

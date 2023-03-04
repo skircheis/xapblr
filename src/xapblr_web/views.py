@@ -10,6 +10,10 @@ from .utils import get_data_dir
 def index():
     return render_template("index.html")
 
+@app.route("/<blog>/<query>", defaults={"page": 1})
+@app.route("/<blog>/<query>/page/<int:page>")
+def prefilled(blog, query, page):
+    return render_template("index.html", blog=blog, query=query, page=page)
 
 @app.route("/list-blogs")
 def list_blogs():
@@ -28,9 +32,17 @@ def search():
     from xapblr.render import renderers, render_plain, render_html, render_embed
     from xapblr.utils import format_timestamp
 
+    pagesize = 50
+    #TODO make this configurable?
+
     args = Namespace()
     args.width = None
-    args.limit = None
+    args.limit = pagesize
+    try:
+        page = int(request.json.get("page", 1)) - 1
+    except (IndexError, ValueError):
+        page = 0
+    args.offset = pagesize * page
     for (k, v) in request.json.items():
         setattr(args, k, v)
     setattr(args, "search-term", [request.json["query"]])
@@ -40,9 +52,10 @@ def search():
         return dumps({"error": "Invalid renderer: " + args.render + "."})
     renderer = renderers[args.render]
     start = time_ns()
-    matches = search(args)
-    out = {"results": [], "meta": {}}
-    for m in matches:
+    res = search(args)
+    out = {"results": [], "meta": res[0]}
+    for m in res[1]:
+        print(m)
         m["rendered"] = renderer(m, args)
         [m.pop(k) for k in ["content", "trail", "blog"]]
         m["timestamp_hf"] = format_timestamp(m["timestamp"])

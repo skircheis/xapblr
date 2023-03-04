@@ -11,10 +11,16 @@ function getHTML(url, callback) {
     xhr.send();
 }
 
-function search(event) {
+function submit_handler(event){
     event.preventDefault();
-    const formData = new FormData(event.target)
+    event.target.querySelector("#page").value = 1;
+    search(event.target);
+}
+
+function search(form) {
+    const formData = new FormData(form)
     const data = Object.fromEntries(formData.entries());
+    cached_search = formData;
     fetch("/search",
         {method: "POST",
             headers: {
@@ -31,11 +37,41 @@ function search(event) {
     )
 }
 
+function paginate(form) {
+    var blog = form.querySelector("#blog");
+    var query = form.querySelector("#query");
+    blog.value = cached_search.get("blog");
+    query.value = cached_search.get("query");
+    search(form);
+}
+
 function display_meta(meta) {
-    target = document.querySelector("#results-meta");
-    target.style.display = 'block'
-    target.querySelector(".count").innerHTML = meta["count"]
-    target.querySelector(".time").innerHTML = Math.round(meta["time_ns"] / 1e6);
+    var target = document.querySelector("#results-meta");
+    target.style.display = "block";
+    var pager = target.querySelector("#page");
+    var pages = Math.ceil(meta["matches"]/meta["pagesize"]);
+var paginated = target.querySelector("#results-meta-paginated");
+    var complete  = target.querySelector("#results-meta-complete");
+    var set_time =  (container) => {
+        container.querySelector(".time").innerHTML = Math.round(meta["time_ns"] / 1e6);
+    } ;
+    pager.value = pages;
+    if ( meta["offset"] > meta["matches"] ) {
+        var search_form = document.querySelector("#search-form");
+        paginate(search_form);
+    } else if (meta["count"] < meta["matches"] ){
+        paginated.style.display = "block";
+        complete.style.display = "none";
+        target.querySelector(".match_start").innerHTML = meta["offset"] + 1;
+        target.querySelector(".match_end").innerHTML = meta["offset"] + meta["count"];
+        target.querySelector(".matches_total").innerHTML = meta["matches"];
+        set_time(paginated);
+    } else {
+        complete.style.display = "block";
+        paginated.style.display = "none";
+        target.querySelector(".count").innerHTML = meta["count"];
+        set_time(complete);
+    }
 }
 
 function display_results(results) {
