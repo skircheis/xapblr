@@ -10,6 +10,7 @@ from .utils import get_data_dir
 def index():
     return render_template("index.html")
 
+@app.route("/<blog>", defaults={"query": "", "page": 1})
 @app.route("/<blog>/<query>", defaults={"page": 1})
 @app.route("/<blog>/<query>/page/<int:page>")
 def prefilled(blog, query, page):
