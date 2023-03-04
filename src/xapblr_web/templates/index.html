@@ -18,6 +18,7 @@
                     if( blog.value != "" ){
                         query.focus();
                         if(  query.value != ""){
+                            query.selectionStart = query.selectionEnd = query.value.length;
                             search(search_form);
                         }
                     } else {
