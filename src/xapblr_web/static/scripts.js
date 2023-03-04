@@ -41,6 +41,10 @@ function search(form, push_state = true) {
             display_results(res["results"]);
             display_meta(res["meta"]);
         }
+    ).then( res => {
+        var target = document.querySelector("#grid");
+        target.scrollTop = 0;
+        }
     )
 }
 
