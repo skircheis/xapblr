@@ -1,4 +1,5 @@
 import lark
+from datetime import datetime
 
 
 def parse_date(date_str):
@@ -6,4 +7,4 @@ def parse_date(date_str):
     # returns a unix timestamp
     # Example inputs:
     # yesterday, 2 hours ago, last wednesday, 5 days ago, 1659706622
-    raise NotImplementedError
+    return datetime.strptime(date_str, "%Y-%m-%d").timestamp()
