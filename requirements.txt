@@ -1,3 +1,4 @@
-celery
 pytumblr
+flask
+flask-assets
 dateparser
