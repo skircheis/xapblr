@@ -13,8 +13,14 @@ def render_plain(post, args):
     width = args.width or 80
     rendered = [render_plain_one(p, width) for p in post["trail"]]
     rendered.append(render_plain_one(post, width))
-    delim = "\n" + "=" * width + "\n"
-    return ("-" * width + "\n").join([r for r in rendered if r]) + delim
+    delim = "\n\n" + "=" * width + "\n"
+    return ("\n" + "-" * width + "\n").join([r for r in rendered if r]) + delim
+
+
+def render_plain_poll(block):
+    out = f"[Poll] {block['question']}\n"
+    out += "\n".join(["* " + a["answer_text"] for a in block["answers"]])
+    return out
 
 
 def render_plain_one(post, width):
@@ -22,13 +28,15 @@ def render_plain_one(post, width):
         return ""
     user = get_author(post)
     out = f"{user}:\n"
-    out += "".join(
-        [
-            "\n".join(wrap(block["text"], width=width)) + "\n\n"
-            for block in post["content"]
-            if block["type"] == "text"
-        ]
-    )
+    texts = []
+    for block in post["content"]:
+        if block["type"] == "text":
+            texts.append("\n".join(wrap(block["text"], width=width)))
+        elif block["type"] == "poll":
+            texts.append(render_plain_poll(block))
+        elif block["type"] == "image":
+            texts.append("[image]")
+    out += "\n\n".join(texts)
     return out
 
 
@@ -51,9 +59,17 @@ def render_md_one(post, width):
     return out
 
 
+def render_md_poll(block):
+    out = f"**{block['question']}**\n"
+    out += "\n".join(["* " + a["answer_text"] for a in block["answers"]])
+    return out
+
+
 def render_md_block(block, pref_width):
     if block["type"] == "text":
         return block["text"] + "\n"
+    if block["type"] == "poll":
+        return render_md_poll(block) + "\n"
     elif block["type"] == "image":
         disp_width = 0
         orig_url = None
@@ -95,9 +111,21 @@ def render_html_one(post):
     return out
 
 
+def render_html_poll(block):
+    out = f"<span class=\"poll_question\"> {block['question']}</span>\n"
+    out += (
+        '<ul class="poll_answers">\n'
+        + "\n".join([f"<li>{a['answer_text']}</li>" for a in block["answers"]])
+        + "</ul>"
+    )
+    return out
+
+
 def render_html_block(block):
     if block["type"] == "text":
         return block["text"] + "\n"
+    elif block["type"] == "poll":
+        return render_html_poll(block)
     elif block["type"] == "image":
         orig_url = None
         sources = []

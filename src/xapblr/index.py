@@ -47,10 +47,17 @@ def index_image(block, tg):
         pass
 
 
+def index_poll(block, tg):
+    tg.index_text(block["question"])
+    for a in block["answers"]:
+        tg.index_text(a["answer_text"])
+
+
 block_indexers = {
     "text": index_text,
     "link": index_link,
     "image": index_image,
+    "poll": index_poll,
 }
 
 
