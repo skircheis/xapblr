@@ -22,10 +22,10 @@ def prefilled(blog, query, page):
 
 @app.route("/list-blogs")
 def list_blogs():
-    from xapblr.list import list_blogs as l
+    from xapblr.list import list_blogs as _list_blogs
 
     args = Namespace()
-    return dumps(list(l(args)))
+    return dumps(list(_list_blogs(args)))
 
 
 @app.route("/assets/<path:path>")
@@ -36,7 +36,7 @@ def send_static(path):
 @app.route("/search", methods=["POST"])
 def search():
     from xapblr.search import search
-    from xapblr.render import renderers, render_plain, render_html, render_embed
+    from xapblr.render import renderers
     from xapblr.utils import format_timestamp
 
     pagesize = 50

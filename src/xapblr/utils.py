@@ -1,3 +1,4 @@
+from datetime import datetime
 from json import load
 from os import environ
 from pathlib import Path
@@ -62,12 +63,13 @@ def get_author(post):
     except KeyError:
         return post["broken_blog_name"]
 
+
 def fix_date_range(d):
     def _fix(m):
         return m[0].replace(" ", "_")
-    return sub("date:(\".*\"|.*)?\.\.(\".*\"|.*)?", _fix, d)
 
-from datetime import datetime
+    return sub('date:(".*"|.*)?\\.\\.(".*"|.*)?', _fix, d)
+
 
 try:
     import humanfriendly

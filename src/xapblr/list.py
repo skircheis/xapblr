@@ -1,5 +1,5 @@
 from xapian import Database
-from .utils import get_db_dir, get_db, format_timestamp
+from .utils import get_db_dir, format_timestamp
 from .search import get_latest, get_earliest
 
 

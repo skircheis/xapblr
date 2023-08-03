@@ -1,5 +1,5 @@
 from datetime import datetime
-from json import loads, dumps
+from json import loads
 from xapian import (
     Database,
     Enquire,
@@ -15,7 +15,7 @@ from urllib.parse import quote as urlencode
 
 from .date_parser import parse_date
 from .render import renderers
-from .utils import format_timestamp, get_db, prefixes, value_slots
+from .utils import get_db, prefixes, value_slots
 
 
 def search_command(args):
@@ -83,10 +83,8 @@ def search(args):
     qp.add_boolean_prefix("tag", TagProcessor())
 
     qstr = " ".join(args.search)
-    print(qstr)
     try:
         query = qp.parse_query(qstr)
-        print(query)
     except QueryParserError as e:
         meta["matches"] = 0
         meta["error"] = str(e)

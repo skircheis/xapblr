@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_assets import Environment, Bundle
 from subprocess import Popen, PIPE
-from pathlib import Path
 
 from .utils import get_data_dir
 

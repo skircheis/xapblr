@@ -1,5 +1,6 @@
 import dateparser
 
+
 def parse_date(date_str):
     # takes a human-readable datetime string as understood by notmuch and
     # returns a unix timestamp
@@ -13,4 +14,3 @@ def parse_date(date_str):
         return int(dt.timestamp())
     else:
         raise ValueError(f"failed to parse date string: {date_str}")
-

@@ -1,4 +1,4 @@
-from json import loads, dumps
+from json import dumps
 from requests import get
 from textwrap import wrap
 
@@ -144,7 +144,7 @@ def render_html_block(block):
 
 
 def render_embed(post, args):
-    url = f"https://www.tumblr.com/oembed/1.0"
+    url = "https://www.tumblr.com/oembed/1.0"
     response = get(url, {"url": post["post_url"]})
     return response.json()["html"]
 

@@ -175,7 +175,7 @@ search_parser.add_argument(
     metavar="search-term",
     nargs="+",
     help="A search term; see README.",
-    type=fix_date_range
+    type=fix_date_range,
 )
 
 

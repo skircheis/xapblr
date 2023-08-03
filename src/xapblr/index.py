@@ -5,12 +5,9 @@ from math import ceil
 import pytumblr
 from xapian import (
     Document,
-    Enquire,
-    Query,
     Stem,
     TermGenerator,
     sortable_serialise,
-    sortable_unserialise,
 )
 
 from time import sleep
@@ -18,7 +15,14 @@ from time import sleep
 from urllib.parse import quote as urlencode, urlparse
 
 from .search import get_latest
-from .utils import get_api_key, get_author, get_db, format_timestamp, prefixes, value_slots
+from .utils import (
+    get_api_key,
+    get_author,
+    get_db,
+    format_timestamp,
+    prefixes,
+    value_slots,
+)
 
 
 def index_text(block, tg):
