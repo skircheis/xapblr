@@ -44,17 +44,17 @@ should be `~/.local/share/xapblr`.
 
 You can now initialise the index of your blog thus:
 ```sh
-xapblr index -full <your-blog-url>
+xapblr index --full <your-blog-url>
 ```
 This may take some time due to rate limits, see [below](#initialisation-and-rate-limiting).
-The index is regularly commited to disk, so you can put this process in the background and start looking around;
+The index is regularly committed to disk, so you can put this process in the background and start looking around;
 try `xapblr search --help` and see `[SEARCH.md](SEARCH.MD)`.
 
 `systemd` units are provided for regular re-indexing.
 Viz.,
 ```sh
 systemctl --user enable --now xapblr-hourly@<your-blog-url>
-systemctl --user enable --now xapbl-dailyr@<your-blog-url>
+systemctl --user enable --now xapbl-daily@<your-blog-url>
 ```
 for hourly and daily re-indexing, respectively.
 
