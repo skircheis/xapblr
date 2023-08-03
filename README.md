@@ -111,6 +111,6 @@ posts that you know have been edited on Tumblr, pass suitable options to
  * Python 3
  * `pytumblr`
  * `xapian`
+ * `dateparser`
  * `flask` and `flask-assets` (for the web interface)
  * `uwsgi` (for the web interface)
- * `lark` (for date parsing, NYI)
