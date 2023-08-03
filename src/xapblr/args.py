@@ -7,6 +7,7 @@ from .render import renderers
 from .search import search_command
 from .server import server
 from .date_parser import parse_date
+from .utils import fix_date_range
 
 
 class StoreDateAction(Action):
@@ -170,10 +171,11 @@ search_parser.add_argument(
     default="newest",
 )
 search_parser.add_argument(
-    "search-term",
+    "search",
+    metavar="search-term",
     nargs="+",
     help="A search term; see README.",
-    type=str,
+    type=fix_date_range
 )
 
 

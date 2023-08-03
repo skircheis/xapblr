@@ -11,5 +11,6 @@ def parse_date(date_str):
     dt = dateparser.parse(date_str)
     if dt is not None:
         return int(dt.timestamp())
-    print(f"failed to parse date string: {date_str}")
+    else:
+        raise ValueError(f"failed to parse date string: {date_str}")
 

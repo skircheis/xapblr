@@ -18,10 +18,10 @@ The default connective is `AND`.
     Match posts where any post in the reblog chain is from `<blog-name>`.
 * `tag:<tag>`
     Match posts tagged `#<tag>`
-* `date:<since>..<until> or date:<date>` (NYI)
-    Match posts made between `<since>` and `<until>`
+* `date:<since>..<until> or date:<date>`
+    Match posts made between `<since>` and `<until>`, parsing human-readable dates.
+    Try `date:"1 week ago..yesterday"` (note the quotes!).
 
-    `xapblr` aims to support the same date and time search as `notmuch`; see the [`notmuch` documentation](https://notmuchmail.org/doc/latest/man7/notmuch-search-terms.html#date-and-time-search) for details.
 * `link:<domain>`
     Match posts that link to `<domain>` or any of its subdomains. E.g.,
     `link:wikipedia.org` matches both posts with links to `en.wikipedia.org`

@@ -66,14 +66,23 @@ function paginate(form) {
 
 function display_meta(meta) {
     var target = document.querySelector("#results-meta");
-    target.style.display = "block";
+    var error_disp = document.querySelector("#error");
     var pager = target.querySelector("#page");
     var pages = Math.ceil(meta["matches"]/meta["pagesize"]);
-var paginated = target.querySelector("#results-meta-paginated");
+    var paginated = target.querySelector("#results-meta-paginated");
     var complete  = target.querySelector("#results-meta-complete");
     var set_time =  (container) => {
         container.querySelector(".time").innerHTML = Math.round(meta["time_ns"] / 1e6);
     } ;
+    if ( meta["error"] != undefined ) {
+        target.style.display = "none";
+        error_disp.style.display = "block";
+        error_disp.querySelector(".error-msg").innerHTML = meta["error"];
+        return;
+    } else {
+        target.style.display = "block";
+        error_disp.style.display = "none";
+    }
     if ( meta["offset"] > meta["matches"] ) {
         var search_form = document.querySelector("#search-form");
         pager.value = pages;

@@ -1,3 +1,4 @@
+from datetime import datetime
 from json import loads, dumps
 from xapian import (
     Database,
@@ -5,16 +6,25 @@ from xapian import (
     FieldProcessor,
     Query,
     QueryParser,
+    QueryParserError,
+    RangeProcessor,
+    sortable_serialise,
     sortable_unserialise,
 )
 from urllib.parse import quote as urlencode
 
+from .date_parser import parse_date
 from .render import renderers
-from .utils import format_timestamp, get_db, prefixes
+from .utils import format_timestamp, get_db, prefixes, value_slots
 
 
 def search_command(args):
     res = search(args)
+    try:
+        print("An error occured: " + res[0]["error"])
+        return
+    except KeyError:
+        pass
     for m in res[1]:
         out = renderers[args.renderer](m, args)
         print(out)
@@ -25,22 +35,63 @@ class TagProcessor(FieldProcessor):
         return Query(prefixes["tag"] + urlencode(args.lower()))
 
 
+class DateRangeProcessor(RangeProcessor):
+    def __init__(self, slot, prefix):
+        super(DateRangeProcessor, self).__init__(slot, prefix)
+        self.slot = slot
+
+    def __call__(self, begin, end):
+        begin, end = begin.decode("utf8"), end.decode("utf8")
+        try:
+            if len(begin) == 0:
+                begin = 0.0
+            else:
+                begin = parse_date(begin)
+            if len(end) == 0:
+                end = datetime.now().timestamp()
+            else:
+                end = parse_date(end)
+            begin, end = sortable_serialise(begin), sortable_serialise(end)
+        except ValueError as e:
+            raise QueryParserError(str(e))
+        return Query(Query.OP_VALUE_RANGE, self.slot, begin, end)
+
+
 def search(args):
     """
     Returns a tuple (meta, iter) where meta is a dict containing meta
     information about the MSet, and iter is an iterator over the matches
     """
 
+    offset = args.offset or 0
+    pagesize = args.limit or 50
+    meta = {
+        "offset": offset,
+        "pagesize": pagesize,
+    }
+
     db = get_db(args.blog, "r")
     qp = QueryParser()
     qp.set_stemming_strategy(QueryParser.STEM_NONE)
     qp.set_default_op(Query.OP_AND)
+
+    qp.add_rangeprocessor(DateRangeProcessor(value_slots["timestamp"], "date:"))
+
     qp.add_boolean_prefix("author", prefixes["author"])
     qp.add_boolean_prefix("op", prefixes["op"])
     qp.add_boolean_prefix("link", prefixes["link"])
     qp.add_boolean_prefix("tag", TagProcessor())
-    qstr = " ".join(getattr(args, "search-term"))
-    query = qp.parse_query(qstr)
+
+    qstr = " ".join(args.search)
+    print(qstr)
+    try:
+        query = qp.parse_query(qstr)
+        print(query)
+    except QueryParserError as e:
+        meta["matches"] = 0
+        meta["error"] = str(e)
+        return (meta, iter([]))
+
     enq = Enquire(db)
     if args.sort == "newest":
         enq.set_sort_by_value_then_relevance(0, True)
@@ -49,14 +100,8 @@ def search(args):
     elif args.sort == "relevance":
         pass
     enq.set_query(query)
-    offset = args.offset or 0
-    pagesize = args.limit or 50
     matches = enq.get_mset(offset, pagesize)
-    meta = {
-        "offset": offset,
-        "pagesize": pagesize,
-        "matches": matches.get_matches_estimated(),
-    }
+    meta["matches"] = matches.get_matches_estimated()
     if matches.empty():
         match_iter = iter([])
     else:

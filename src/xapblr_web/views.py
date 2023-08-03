@@ -5,6 +5,7 @@ from time import time_ns
 from xapblr_web import app
 
 from .utils import get_data_dir
+from xapblr.utils import fix_date_range
 
 
 @app.route("/")
@@ -51,7 +52,7 @@ def search():
     args.offset = pagesize * page
     for k, v in request.json.items():
         setattr(args, k, v)
-    setattr(args, "search-term", [request.json["query"]])
+    args.search = [fix_date_range(request.json["query"])]
     # return vars(args)
     allowed_renderers = ["plain", "html", "embed"]
     if args.render not in allowed_renderers:

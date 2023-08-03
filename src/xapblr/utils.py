@@ -1,6 +1,7 @@
 from json import load
 from os import environ
 from pathlib import Path
+from re import sub
 
 from xapian import Database, WritableDatabase, DatabaseNotFoundError, DB_CREATE_OR_OPEN
 
@@ -61,6 +62,10 @@ def get_author(post):
     except KeyError:
         return post["broken_blog_name"]
 
+def fix_date_range(d):
+    def _fix(m):
+        return m[0].replace(" ", "_")
+    return sub("date:(\".*\"|.*)?\.\.(\".*\"|.*)?", _fix, d)
 
 from datetime import datetime
 
