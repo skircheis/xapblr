@@ -18,7 +18,7 @@ from time import sleep
 from urllib.parse import quote as urlencode, urlparse
 
 from .search import get_latest
-from .utils import get_api_key, get_author, get_db, format_timestamp, prefixes
+from .utils import get_api_key, get_author, get_db, format_timestamp, prefixes, value_slots
 
 
 def index_text(block, tg):
@@ -89,7 +89,7 @@ def index_post(post, tg):
         # xapian will never put a space in a term but we can just urlencode
         doc.add_term(prefixes["tag"] + urlencode(t.lower()))
 
-    doc.add_value(0, sortable_serialise(post["timestamp"]))
+    doc.add_value(value_slots["timestamp"], sortable_serialise(post["timestamp"]))
     doc.set_data(dumps(post))
 
     id_term = "Q" + str(post["id"])

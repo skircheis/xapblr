@@ -15,6 +15,10 @@ prefixes = {
     "link": "XL",
 }
 
+value_slots = {
+    "timestamp": 0,
+}
+
 
 def get_api_key():
     key_fname = "APIKEY"
