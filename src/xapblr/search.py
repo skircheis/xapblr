@@ -32,7 +32,10 @@ def search_command(args):
 
 class TagProcessor(FieldProcessor):
     def __call__(self, args):
-        return Query(prefixes["tag"] + urlencode(args.lower()))
+        return Query(
+            # take the first 245 bytes since that's the max xapian term length
+            (prefixes["tag"] + urlencode(args.lower()))[:245]
+        )
 
 
 class DateRangeProcessor(RangeProcessor):
