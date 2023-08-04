@@ -64,6 +64,12 @@ def get_author(post):
         return post["broken_blog_name"]
 
 
+def encode_tag(tag):
+    # xapian will never put a space in a term but we can just urlencode
+    # take the first 245 bytes since that's the max xapian term length
+    return (prefixes["tag"] + urlencode(tag.lower()))[:245]
+
+
 def fix_date_range(d):
     def _fix(m):
         return m[0].replace(" ", "_")

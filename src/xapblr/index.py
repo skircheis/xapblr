@@ -19,6 +19,7 @@ from .utils import (
     get_api_key,
     get_author,
     get_db,
+    encode_tag,
     format_timestamp,
     prefixes,
     value_slots,
@@ -90,8 +91,7 @@ def index_post(post, tg):
     index_content(post, tg)
 
     for t in post["tags"]:
-        # xapian will never put a space in a term but we can just urlencode
-        doc.add_term(prefixes["tag"] + urlencode(t.lower()))
+        doc.add_term(encode_tag(t))
 
     doc.add_value(value_slots["timestamp"], sortable_serialise(post["timestamp"]))
     doc.set_data(dumps(post))
