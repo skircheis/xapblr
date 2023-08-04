@@ -1,5 +1,6 @@
 from argparse import Namespace
 from flask import render_template, request, Response, send_from_directory
+from importlib import metadata
 from json import dumps
 from time import time_ns
 from xapblr_web import app
@@ -7,17 +8,18 @@ from xapblr_web import app
 from .utils import get_data_dir
 from xapblr.utils import fix_date_range
 
+version = metadata.metadata("xapblr")['version']
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", version=version)
 
 
 @app.route("/<blog>", defaults={"query": "", "page": 1})
 @app.route("/<blog>/<query>", defaults={"page": 1})
 @app.route("/<blog>/<query>/page/<int:page>")
 def prefilled(blog, query, page):
-    return render_template("index.html", blog=blog, query=query, page=page)
+    return render_template("index.html", blog=blog, query=query, page=page, version=version)
 
 
 @app.route("/list-blogs")
