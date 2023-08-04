@@ -15,7 +15,7 @@ from urllib.parse import quote as urlencode
 
 from .date_parser import parse_date
 from .render import renderers
-from .utils import get_db, prefixes, value_slots
+from .utils import get_db, encode_tag, prefixes, value_slots
 
 
 def search_command(args):
@@ -32,10 +32,7 @@ def search_command(args):
 
 class TagProcessor(FieldProcessor):
     def __call__(self, args):
-        return Query(
-            # take the first 245 bytes since that's the max xapian term length
-            (prefixes["tag"] + urlencode(args.lower()))[:245]
-        )
+        return Query(encode_tag(args))
 
 
 class DateRangeProcessor(RangeProcessor):
