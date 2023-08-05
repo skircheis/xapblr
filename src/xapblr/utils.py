@@ -35,14 +35,14 @@ def get_xdg_data_home():
         return Path(environ["HOME"]) / ".local/share"
 
 
-def get_db_dir():
+def get_data_dir():
     return get_xdg_data_home() / "xapblr"
 
 
 def get_db(blog, mode="r"):
     # returns a xapian database object for the specified blog
     # mode = 'r' for reading, 'w' for writing
-    db_path = get_db_dir() / blog
+    db_path = get_data_dir() / blog
     db_path.mkdir(parents=True, exist_ok=True)
     db_path_str = str(db_path)
     if mode == "w":

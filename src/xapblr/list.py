@@ -1,5 +1,5 @@
 from xapian import Database
-from .utils import get_db_dir, format_timestamp
+from .utils import get_data_dir, format_timestamp
 from .search import get_latest, get_earliest
 
 
@@ -15,7 +15,7 @@ def list_cmd(args):
 
 
 def list_blogs(args):
-    for child in get_db_dir().iterdir():
+    for child in get_data_dir().iterdir():
         if child.is_dir():
             try:
                 db = Database(str(child))
