@@ -11,7 +11,6 @@ from xapian import (
     sortable_serialise,
     sortable_unserialise,
 )
-from urllib.parse import quote as urlencode
 
 from .date_parser import parse_date
 from .render import renderers

@@ -3,6 +3,7 @@ from json import load
 from os import environ
 from pathlib import Path
 from re import sub
+from urllib.parse import quote as urlencode
 
 from xapian import Database, WritableDatabase, DatabaseNotFoundError, DB_CREATE_OR_OPEN
 

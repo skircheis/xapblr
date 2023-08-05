@@ -12,7 +12,7 @@ from xapian import (
 
 from time import sleep
 
-from urllib.parse import quote as urlencode, urlparse
+from urllib.parse import urlparse
 
 from .search import get_latest
 from .utils import (
