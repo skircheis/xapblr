@@ -1,7 +1,6 @@
 from datetime import datetime
-from json import load
-from os import environ
 from pathlib import Path
+from os import environ
 from re import sub
 from urllib.parse import quote as urlencode
 
@@ -23,20 +22,21 @@ value_slots = {
 }
 
 
-def get_api_key():
-    key_fname = "APIKEY"
-    xdg_config_home = Path(environ["XDG_CONFIG_HOME"])
-    key_file = xdg_config_home / "xapblr" / key_fname
-    with key_file.open() as f:
-        return load(f)
+def get_xdg_config_home():
+    try:
+        return Path(environ["XDG_CONFIG_HOME"])
+    except KeyError:
+        return Path(environ["HOME"]) / ".config"
+
+def get_xdg_data_home():
+    try:
+        return Path(environ["XDG_DATA_HOME"])
+    except KeyError:
+        return Path(environ["HOME"]) / ".local/share"
 
 
 def get_db_dir():
-    try:
-        xdg_data_home = Path(environ["XDG_DATA_HOME"])
-    except KeyError:
-        xdg_data_home = Path(environ["HOME"]) / ".local/share"
-    return xdg_data_home / "xapblr"
+    return get_xdg_data_home() / "xapblr"
 
 
 def get_db(blog, mode="r"):

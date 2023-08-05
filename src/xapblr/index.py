@@ -3,6 +3,7 @@ from datetime import datetime
 from json import dumps
 from math import ceil
 import pytumblr
+import sys
 from xapian import (
     Document,
     Stem,
@@ -14,9 +15,9 @@ from time import sleep
 
 from urllib.parse import urlparse
 
+from .config import Config
 from .search import get_latest
 from .utils import (
-    get_api_key,
     get_author,
     get_db,
     encode_tag,
@@ -103,7 +104,11 @@ def index_post(post, tg):
 
 
 def index(args):
-    api_key = get_api_key()
+    try:
+        api_key = Config()["api_key"]
+    except KeyError:
+        sys.exit("No API key configured. Exiting.")
+
     client = pytumblr.TumblrRestClient(**api_key)
     kwargs = {}
     if args.until is not None:
