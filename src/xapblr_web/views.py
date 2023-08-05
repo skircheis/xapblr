@@ -2,17 +2,18 @@ from argparse import Namespace
 from flask import render_template, request, Response, send_from_directory
 from importlib import metadata
 from json import dumps
+from re import match
 from time import time_ns
 from xapblr_web import app
 
-from .utils import get_data_dir
-from xapblr.utils import fix_date_range
+from xapblr.config import Config
+from xapblr.utils import fix_date_range, get_data_dir
 
 version = metadata.version("xapblr")
 
 @app.route("/")
 def index():
-    return render_template("index.html.jinja", version=version)
+    return render_template("index.html.jinja", version=version, about=Config()["about"])
 
 
 @app.route("/search/<blog>", defaults={"query": "", "page": 1})
