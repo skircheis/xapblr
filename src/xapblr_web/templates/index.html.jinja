@@ -1,0 +1,21 @@
+ <!DOCTYPE html>
+<html>
+    <title>xapblr v{{version}}</title>
+    <head>
+        {% assets "css" %}
+        <link rel="stylesheet" type="text/css" href="/{{ASSET_URL}} ">
+        {% endassets %}
+        {% assets "js" %}
+        <script type="text/javascript" src="/{{ASSET_URL}}"></script>
+        {% endassets %}
+    </head>
+    <body onload="javascript:xapblr_onload()">
+        <div id="login">
+            <form id="login-form">
+                <input name="username" type="text" placeholder="Username or email" /> <br />
+                <input name="password" type="password" placeholder="password" /> <br />
+                <input type="submit" id="login" value="Log in" />
+            </form>
+        </div>
+    </body>
+</html>

@@ -12,14 +12,14 @@ version = metadata.version("xapblr")
 
 @app.route("/")
 def index():
-    return render_template("index.html", version=version)
+    return render_template("index.html.jinja", version=version)
 
 
-@app.route("/<blog>", defaults={"query": "", "page": 1})
-@app.route("/<blog>/<query>", defaults={"page": 1})
-@app.route("/<blog>/<query>/page/<int:page>")
+@app.route("/search/<blog>", defaults={"query": "", "page": 1})
+@app.route("/search/<blog>/<query>", defaults={"page": 1})
+@app.route("/search/<blog>/<query>/page/<int:page>")
 def prefilled(blog, query, page):
-    return render_template("index.html", blog=blog, query=query, page=page, version=version)
+    return render_template("search.html.jinja", blog=blog, query=query, page=page, version=version)
 
 
 @app.route("/list-blogs")
