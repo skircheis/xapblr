@@ -1,0 +1,13 @@
+{% macro menuitem(url,text,icon) -%}
+<a href="/{{url}}"><i class="fi fi-bs-{{icon}}"></i> {{text}}</a><br />
+{%- endmacro -%}
+<div id="menu">
+    <h1>Menu</h1>
+
+    {{ menuitem("search", "Search", "search-alt") }}
+    {{ menuitem("profile", current_user.name, "user") }}
+    {{ menuitem("diagnostics", "Diagnostics", "chart-histogram") }}
+    {{ menuitem("admin", "Admin panel", "settings-sliders") }}
+    <br />
+    {{ menuitem("logout", "Log out", "exit") }}
+</div>

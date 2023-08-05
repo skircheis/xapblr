@@ -1,4 +1,6 @@
 pytumblr
 flask
 flask-assets
+flask-sqlalchemy
+flask-login
 dateparser

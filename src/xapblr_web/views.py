@@ -1,26 +1,76 @@
 from argparse import Namespace
-from flask import render_template, request, Response, send_from_directory
 from importlib import metadata
 from json import dumps
 from re import match
 from time import time_ns
-from xapblr_web import app
 
 from xapblr.config import Config
 from xapblr.utils import fix_date_range, get_data_dir
 
+from flask import (
+    redirect,
+    render_template,
+    request,
+    Response,
+    send_from_directory,
+    url_for,
+)
+from flask_login import login_user, logout_user, login_required
+from xapblr_web import app
+from .user import User
+
 version = metadata.version("xapblr")
+config = Config()
+
+
+def JSONResponse(x):
+    return Response(dumps(x), mimetype="application/json")
+
 
 @app.route("/")
 def index():
-    return render_template("index.html.jinja", version=version, about=Config()["about"])
+    return render_template("index.html.jinja", version=version, about=config["about"])
 
 
+@app.route("/login", methods=["POST"])
+def login():
+    try:
+        user = request.json["username"]
+    except KeyError:
+        return JSONResponse({"success": False, "message": "username required"})
+    try:
+        password = request.json["password"]
+    except KeyError:
+        return JSONResponse({"success": False, "message": "password required"})
+
+    if user == "oberstein" and password == "dogseatdogfood":
+        login_user(User("oberstein"))
+        return JSONResponse({"success": True, "message": "Welcome oberstein"})
+    else:
+        return JSONResponse({"success": False, "message": "invalid credentials"})
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("index"))
+
+
+@app.route("/search", methods=["GET"], defaults={"blog": "", "query": "", "page": 1})
 @app.route("/search/<blog>", defaults={"query": "", "page": 1})
 @app.route("/search/<blog>/<query>", defaults={"page": 1})
 @app.route("/search/<blog>/<query>/page/<int:page>")
+@login_required
 def prefilled(blog, query, page):
-    return render_template("search.html.jinja", blog=blog, query=query, page=page, version=version)
+    return render_template(
+        "search.html.jinja",
+        blog=blog,
+        query=query,
+        page=page,
+        version=version,
+        about=config["about"],
+    )
 
 
 @app.route("/list-blogs")
@@ -73,4 +123,4 @@ def search():
     out["meta"]["time_ns"] = stop - start
     out["meta"]["count"] = len(out["results"])
 
-    return Response(dumps(out), mimetype="application/json")
+    return JSONResponse(out)

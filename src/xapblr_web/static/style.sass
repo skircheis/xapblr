@@ -8,6 +8,7 @@ $gn: #88b090
 $rd: #e89393
 $dk: #262626
 $yw: #efef8f
+$bw: #f0dfaf
 
 $font-stack: 'Helvetica Neue', HelveticaNeue, Helvetica, Arial, sans-serif
 
@@ -22,6 +23,11 @@ body
     display: flex
     justify-content: center
 
+span.success
+    color: $gn
+
+span.failure
+    color: $rd
 
 img
     max-width: 100% !important
@@ -62,26 +68,28 @@ label
     display: grid
     column-gap: 1em
     grid-template-rows: min-content 1fr
-    grid-template-columns: 1fr 25em
-    grid-template-areas: "search help" "results help"
-    width: min(1080px, 100vw)
+    grid-template-columns: 25em auto
+    grid-template-areas: "search-header search-header" "sidebar search" "sidebar results"
+    width: 98vw
     overflow: auto
     height: 100vh
 
+#search-header
+    justify-content: center
+    grid-area: search-header
 
-#help
-    grid-area: help
+#sidebar
+    grid-area: sidebar
     position: sticky
     top: 0
     max-height: 90vh
     overflow-y: scroll
     padding: 2px
+    padding-left: 16px
     align-self: start
-    > :first-child
-    margin-top: 0px !important
     h1, h2
-        margin-top: .1em
-        margin-bottom: .3em
+        margin-top: .3em
+        margin-bottom: .1em
         font-weight: 600
         line-height: 1.25
     p, ul, ol
@@ -91,6 +99,15 @@ label
     li > p
         margin-bottom: 0px
 
+#menu
+    > *
+      line-height: 1.4em
+    a, a:visited
+      color: $bw
+      font-weight: bold
+      font-size: 1.2em
+
+
 #applet
     grid-area: search
     position: sticky
@@ -98,7 +115,6 @@ label
     z-index: 99
     width: 100%
     top: 0
-    margin-top: 1em
     margin-left: auto
     margin-right: auto
     padding-bottom: 10px
@@ -196,6 +212,7 @@ input[type=submit]
 
 #results-meta
     width: 100%
+    max-width: 50em
     display: none
     span
         color: $rd

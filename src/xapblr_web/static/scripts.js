@@ -11,11 +11,46 @@ function getHTML(url, callback) {
     xhr.send();
 }
 
-function submit_handler(event){
+function fetch_json(url, data) {
+    return fetch(url,
+        {method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }
+    ).then( res => res.json() );
+}
+
+// Login view
+
+function login_handler(event) {
+    event.preventDefault();
+    form = event.target;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    fetch_json("/login", data).then( res => {
+        var target = document.querySelector("#login-message");
+        target.innerHTML = res["message"]
+        if(res["success"]) {
+            target.className = "success";
+            window.location.href = "/search";
+        } else {
+            target.className = "failure";
+        }
+    }
+   );
+}
+
+// Search view
+
+function search_handler(event){
     event.preventDefault();
     event.target.querySelector("#page").value = 1;
     search(event.target);
 }
+
 
 function search(form, push_state = true) {
     const formData = new FormData(form)
@@ -28,15 +63,7 @@ function search(form, push_state = true) {
         }
         history.pushState(formData, "", url);
     }
-    fetch("/search",
-        {method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        }
-    ).then( res => res.json()).then(
+    fetch_json("/search", data).then(
         res => {
             display_results(res["results"]);
             display_meta(res["meta"]);
@@ -49,7 +76,7 @@ function search(form, push_state = true) {
 }
 
 function set_search_form(form, formData, page) {
-    var blog = form.querySelector("#blog");
+    var blog = form.querySelector("#blogurl");
     var query = form.querySelector("#query");
     blog.value = formData.get("blog");
     query.value = formData.get("query");
