@@ -22,7 +22,7 @@ function search(form, push_state = true) {
     const data = Object.fromEntries(formData.entries());
     cached_search = formData;
     if (push_state) {
-        var url = "/" + formData.get("blog") + "/" + formData.get("query")
+        var url = "/search/" + formData.get("blog") + "/" + formData.get("query")
         if ( formData.get("page") > 1 ) {
             url += "/page/" + formData.get("page")
         }
