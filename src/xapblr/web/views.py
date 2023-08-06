@@ -4,8 +4,8 @@ from json import dumps
 from re import match
 from time import time_ns
 
-from xapblr.config import Config
-from xapblr.utils import fix_date_range, get_data_dir
+from ..config import Config
+from ..utils import fix_date_range, get_data_dir
 
 from flask import (
     redirect,
@@ -16,7 +16,7 @@ from flask import (
     url_for,
 )
 from flask_login import login_user, logout_user, login_required
-from xapblr_web import app
+from . import app
 from .user import User
 
 version = metadata.version("xapblr")
