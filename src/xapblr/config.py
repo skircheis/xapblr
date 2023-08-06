@@ -31,3 +31,5 @@ class Config:
 
     def __getitem__(self, key):
         return self._config[key]
+
+config = Config()

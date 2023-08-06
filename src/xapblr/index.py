@@ -15,7 +15,7 @@ from time import sleep
 
 from urllib.parse import urlparse
 
-from .config import Config
+from .config import config
 from .search import get_latest
 from .utils import (
     get_author,
@@ -105,7 +105,7 @@ def index_post(post, tg):
 
 def index(args):
     try:
-        api_key = Config()["api_key"]
+        api_key = config["api_key"]
     except KeyError:
         sys.exit("No API key configured. Exiting.")
 
