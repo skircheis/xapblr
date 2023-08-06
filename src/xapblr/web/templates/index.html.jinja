@@ -26,10 +26,7 @@
                 </form>
                 <span id="login-message"> </span>
             </div>
-            <div id="config["about"]">
-                <a href="{{config["about"]["source_url"] + version}}">xapblr v{{version}}</a>
-                <b>contact:</b> <a href="mailto:{{config["about"]["contact_email"]}}">{{config["about"]["contact_email"]}}</a>
-            </div>
+            {% include "about.html.jinja" %}
         </div>
     </body>
 </html>
