@@ -4,3 +4,4 @@ flask-assets
 flask-sqlalchemy
 flask-login
 dateparser
+sqlalchemy>=2.0

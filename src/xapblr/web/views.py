@@ -2,8 +2,10 @@ from argparse import Namespace
 from importlib import metadata
 from json import dumps
 from time import time_ns
+from sqlalchemy import select
 
 from ..config import config
+from ..database import db, User
 from ..utils import fix_date_range, get_data_dir
 
 from flask import (
@@ -16,9 +18,9 @@ from flask import (
 )
 from flask_login import current_user, login_user, logout_user, login_required
 from . import app
-from .user import User
 
 version = metadata.version("xapblr")
+
 
 def _render_template(*args, **kwargs):
     return render_template(*args, **kwargs, config=config)
@@ -48,7 +50,7 @@ def index():
 @app.route("/login", methods=["GET"])
 def login():
     if config["multi_user"]:
-        return _render_template("index.html.jinja", version=version)
+        return _render_template("login.html.jinja", version=version)
     else:
         return redirect("/search")
 
@@ -64,9 +66,17 @@ def do_login():
     except KeyError:
         return JSONResponse({"success": False, "message": "password required"})
 
-    if user == "oberstein" and password == "dogseatdogfood":
-        login_user(User("oberstein"))
-        return JSONResponse({"success": True, "message": "Welcome oberstein"})
+    with db.session() as s:
+        q = select(User).where((User.name == user) | (User.email == user))
+        authenticated = None
+        for c in s.scalars(q):
+            if c.salt_hash_and_digest(password) == c.password:
+                authenticated = c
+                break
+
+    if authenticated is not None:
+        login_user(authenticated)
+        return JSONResponse({"success": True, "message": f"Welcome {authenticated.name}"})
     else:
         return JSONResponse({"success": False, "message": "invalid credentials"})
 
