@@ -1,7 +1,7 @@
 pytumblr
 flask
 flask-assets
-flask-sqlalchemy
 flask-login
+flask-sqlalchemy
 dateparser
 sqlalchemy>=2.0
