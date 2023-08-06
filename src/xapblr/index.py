@@ -116,6 +116,13 @@ def index(args):
 
     n = 0
     print(f"Indexing {args.blog}... ", end="")
+    try:
+        blog = client.blog_info(args.blog)["blog"]
+    except KeyError:
+        print()
+        print(f"Blog does not exist or API key owner is blocked by it.", file=sys.stderr)
+        # TODO: this should probably throw instead
+        return
     full = False
     if args.full:
         print("Performing full re-index...")
@@ -135,7 +142,6 @@ def index(args):
     if args.stemmer is not None:
         tg.set_stemmer(Stem(args.stemmer))
 
-    blog = client.blog_info(args.blog)["blog"]
     fetch = True
     if args.since is not None and args.since >= blog["updated"]:
         print(f'No new posts since {format_timestamp(blog["updated"])}', end="")
