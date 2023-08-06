@@ -1,3 +1,4 @@
+from importlib.resources import files
 from json import load, JSONDecodeError
 from pathlib import Path
 import sys
@@ -10,8 +11,12 @@ class Config:
         config_dir = get_xdg_config_home() / "xapblr"
         config_file = config_dir / "config.json"
         key_file = config_dir / "APIKEY"
-        self._config = {}
+
+        with files("xapblr").joinpath("config.json").open() as f:
+            self._config = load(f)
+
         have_api_key = False
+
         try:
             with key_file.open() as f:
                 self._config["api_key"] = load(f)
@@ -31,3 +36,5 @@ class Config:
 
     def __getitem__(self, key):
         return self._config[key]
+
+config = Config()

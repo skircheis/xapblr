@@ -3,7 +3,7 @@ from flask_assets import Environment, Bundle
 from flask_login import LoginManager
 from subprocess import Popen, PIPE
 
-from xapblr.config import Config
+from xapblr.config import config
 from .utils import get_data_dir
 
 
@@ -17,10 +17,9 @@ data_dir = get_data_dir()
 static_dir = data_dir / ".webstatic"
 
 app = Flask(__name__)
-conf = Config()
-if conf["multi_user"]:
+if config["multi_user"]:
     try:
-        app.secret_key = Config()["secret_key"].encode("utf8")
+        app.secret_key = config["secret_key"].encode("utf8")
     except KeyError:
         import secrets
 

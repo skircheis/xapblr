@@ -3,7 +3,7 @@ from importlib import metadata
 from json import dumps
 from time import time_ns
 
-from ..config import Config
+from ..config import config
 from ..utils import fix_date_range, get_data_dir
 
 from flask import (
@@ -19,8 +19,6 @@ from . import app
 from .user import User
 
 version = metadata.version("xapblr")
-config = Config()
-
 
 def _render_template(*args, **kwargs):
     return render_template(*args, **kwargs, config=config)
