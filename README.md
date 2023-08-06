@@ -108,9 +108,12 @@ posts that you know have been edited on Tumblr, pass suitable options to
 `xapblr index`.
 
 ## Dependencies: ##
- * Python 3
- * `pytumblr`
- * `xapian`
- * `dateparser`
- * `flask` and `flask-assets` (for the web interface)
+ * Python 3 and
+ * * `pytumblr`
+ * * `xapian`
+ * * `dateparser`
+ * * `flask` and `flask-assets` (for the web interface)
+   * `humanfriendly` (optional, for some nicer log messages)
  * `uwsgi` (for the web interface)
+ * `sass`
+ * `pandoc`
