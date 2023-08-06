@@ -5,9 +5,11 @@
     <h1>Menu</h1>
 
     {{ menuitem("search", "Search", "search-alt") }}
-    {{ menuitem("profile", current_user.name, "user") }}
     {{ menuitem("diagnostics", "Diagnostics", "chart-histogram") }}
     {{ menuitem("admin", "Admin panel", "settings-sliders") }}
+    {% if config["multi_user"] %}
     <br />
+    {{ menuitem("profile", current_user.name, "user") }}
     {{ menuitem("logout", "Log out", "exit") }}
+    {% endif %}
 </div>

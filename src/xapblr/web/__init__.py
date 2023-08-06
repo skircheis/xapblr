@@ -23,8 +23,11 @@ if conf["multi_user"]:
         app.secret_key = Config()["secret_key"].encode("utf8")
     except KeyError:
         import secrets
+
         key = secrets.token_hex()
-        sys.exit(f"In multi-user mode, a secret_key must be configured. Here is one you can use: {key}.")
+        sys.exit(
+            f"In multi-user mode, a secret_key must be configured. Here is one you can use: {key}."
+        )
 
 assets = Environment(app)
 assets.url = "assets"
@@ -38,9 +41,12 @@ js = Bundle("scripts.js", output="scripts.js")
 assets.register("js", js)
 
 login_manager = LoginManager()
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.get(user_id)
+
 
 login_manager.init_app(app)
 

@@ -17,7 +17,7 @@
     </head>
     <body onload="javascript:xapblr_onload()">
         <div id="login-grid">
-            <h1>Welcome to xapblr@{{about["instance_name"]}}</h1>
+            <h1>Welcome to xapblr@{{config["about"]["instance_name"]}}</h1>
             <div id="login">
                 <form id="login-form">
                     <input id="username" name="username" type="text" placeholder="Username or email" /> <br />
@@ -26,9 +26,9 @@
                 </form>
                 <span id="login-message"> </span>
             </div>
-            <div id="about">
-                <a href="{{about["source_url"] + version}}">xapblr v{{version}}</a>
-                <b>contact:</b> <a href="mailto:{{about["contact_email"]}}">{{about["contact_email"]}}</a>
+            <div id="config["about"]">
+                <a href="{{config["about"]["source_url"] + version}}">xapblr v{{version}}</a>
+                <b>contact:</b> <a href="mailto:{{config["about"]["contact_email"]}}">{{config["about"]["contact_email"]}}</a>
             </div>
         </div>
     </body>

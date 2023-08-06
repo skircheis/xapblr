@@ -1,7 +1,6 @@
 from argparse import Namespace
 from importlib import metadata
 from json import dumps
-from re import match
 from time import time_ns
 
 from ..config import Config
@@ -15,12 +14,23 @@ from flask import (
     send_from_directory,
     url_for,
 )
-from flask_login import login_user, logout_user, login_required
+from flask_login import current_user, login_user, logout_user, login_required
 from . import app
 from .user import User
 
 version = metadata.version("xapblr")
 config = Config()
+
+
+def _render_template(*args, **kwargs):
+    return render_template(*args, **kwargs, config=config)
+
+
+def _login_required(f):
+    if config["multi_user"]:
+        return login_required(f)
+    else:
+        return f
 
 
 def JSONResponse(x):
@@ -29,11 +39,24 @@ def JSONResponse(x):
 
 @app.route("/")
 def index():
-    return render_template("index.html.jinja", version=version, about=config["about"])
+    if config["multi_user"] and current_user.is_authenticated:
+        return redirect("/search")
+    elif config["multi_user"]:
+        return redirect("/login")
+    else:
+        return redirect("/search")
+
+
+@app.route("/login", methods=["GET"])
+def login():
+    if config["multi_user"]:
+        return _render_template("index.html.jinja", version=version)
+    else:
+        return redirect("/search")
 
 
 @app.route("/login", methods=["POST"])
-def login():
+def do_login():
     try:
         user = request.json["username"]
     except KeyError:
@@ -51,7 +74,6 @@ def login():
 
 
 @app.route("/logout")
-@login_required
 def logout():
     logout_user()
     return redirect(url_for("index"))
@@ -61,32 +83,15 @@ def logout():
 @app.route("/search/<blog>", defaults={"query": "", "page": 1})
 @app.route("/search/<blog>/<query>", defaults={"page": 1})
 @app.route("/search/<blog>/<query>/page/<int:page>")
-@login_required
+@_login_required
 def prefilled(blog, query, page):
-    return render_template(
-        "search.html.jinja",
-        blog=blog,
-        query=query,
-        page=page,
-        version=version,
-        about=config["about"],
+    return _render_template(
+        "search.html.jinja", blog=blog, query=query, page=page, version=version
     )
 
 
-@app.route("/list-blogs")
-def list_blogs():
-    from xapblr.list import list_blogs as _list_blogs
-
-    args = Namespace()
-    return dumps(list(_list_blogs(args)))
-
-
-@app.route("/assets/<path:path>")
-def send_static(path):
-    return send_from_directory(str(get_data_dir() / ".webstatic"), path)
-
-
 @app.route("/search", methods=["POST"])
+@_login_required
 def search():
     from xapblr.search import search
     from xapblr.render import renderers
@@ -124,3 +129,16 @@ def search():
     out["meta"]["count"] = len(out["results"])
 
     return JSONResponse(out)
+
+
+@app.route("/diagnostics")
+def list_blogs():
+    from xapblr.list import list_blogs as _list_blogs
+
+    args = Namespace()
+    return dumps(list(_list_blogs(args)))
+
+
+@app.route("/assets/<path:path>")
+def send_static(path):
+    return send_from_directory(str(get_data_dir() / ".webstatic"), path)
