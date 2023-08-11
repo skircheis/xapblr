@@ -47,6 +47,15 @@ def index_link(block, tg):
 
 
 def index_image(block, tg):
+    for m in block["media"]:
+        if m.get("type", None) == "image/gif":
+            tg.get_document().add_term(prefixes["has"] + "gif")
+            break
+    for m in block["media"]:
+        media_key = m.get("media_key", None)
+        if media_key:
+            tg.get_document().add_term(prefixes["media"] + media_key)
+            break
     try:
         tg.index_text(block["alt_text"])
     except KeyError:
@@ -68,12 +77,15 @@ block_indexers = {
 
 
 def index_content(post, tg):
+    doc = tg.get_document()
     for block in post["content"]:
+        if block["type"] != "text":
+            has_term = prefixes["has"] + block["type"]
+            doc.add_term(has_term)
         try:
             block_indexers[block["type"]](block, tg)
         except KeyError:
             pass
-    doc = tg.get_document()
     doc.add_term(prefixes["author"] + get_author(post))
 
 

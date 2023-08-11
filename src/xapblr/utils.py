@@ -15,6 +15,8 @@ prefixes = {
     "url": "U",
     "timestamp": "D",
     "link": "XL",
+    "has": "XM",
+    "media": "F",
 }
 
 value_slots = {
