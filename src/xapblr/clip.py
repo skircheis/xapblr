@@ -34,18 +34,16 @@ class Captioner:
 
     async def process_batch(self, tasks):
         [self.q.put(t) for t in tasks]
+        self.n_tasks = len(tasks)
         start = time_ns()
         threads = [
             to_thread(f)
             for f in [
                 self.download_batch,
                 self.caption_batch,
-                self.q.join,
-                self.fs.join,
             ]
-            # We need the joins here to prevent a race condition where the queues become empty but processing has not finished
         ]
-        tot_bs, tasks, _, _ = await gather(*threads)
+        tot_bs, _ = await gather(*threads)
         t = (time_ns() - start) / 10**9
         dtime, ctime = self.dtime / 10**9, self.ctime / 10**9
         print(
@@ -53,7 +51,6 @@ class Captioner:
             end=" ",
         )
         print(f"({dtime:.2f} s downloading, {ctime:.2f} s captioning).")
-        return tasks
 
     def download_batch(self):
         self.dtime = 0
@@ -70,7 +67,6 @@ class Captioner:
             tot_bs += bs
             print(f"done ({int(bs/1024)} KiB, {dt_ms} ms).", flush=True)
             self.fs.put(t)
-            self.q.task_done()
         return tot_bs
 
     def download(self, task):
@@ -82,8 +78,8 @@ class Captioner:
 
     def caption_batch(self):
         self.ctime = 0
-        results = []
-        while not (self.fs.empty() and self.q.empty()):
+        n_results = 0
+        while n_results < self.n_tasks:
             t = self.fs.get()
             print("Generating caption... ", end=" ", flush=True)
             start = time_ns()
@@ -91,10 +87,8 @@ class Captioner:
             dt = time_ns() - start
             dt_ms = int(dt / 10**6)
             self.ctime += dt
-            results.append(t)
-            self.fs.task_done()
+            n_results += 1
             print(f"Done: {t['caption']} ({dt_ms} ms).", flush=True)
-        return results
 
     def preprocess(self, p):
         im = Image.open(p).convert("RGB")
