@@ -1,5 +1,8 @@
 {
     "clip": {
         "batch_size": 10
+    },
+    "clip_agent": {
+        "sleep": 600
     }
 }

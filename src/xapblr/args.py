@@ -2,6 +2,7 @@ from argparse import ArgumentParser, Action, BooleanOptionalAction
 from platform import node
 
 from .clip import clip_cmd
+from .config import config
 from .index import index
 from .list import list_cmd
 from .rebuild import rebuild
@@ -215,11 +216,22 @@ list_parser.set_defaults(func=list_cmd)
 
 clip_parser = subparsers.add_parser("clip", help="Launch a CLIP agent.")
 clip_parser.set_defaults(func=clip_cmd)
-clip_parser.add_argument("endpoint", help="The endpoint to communicate with.")
-clip_parser.add_argument("agent", help="Agent ID to use.", nargs="?", default=node())
+clip_parser.add_argument("server", help="The server profile to communicate with.")
+try:
+    default_agent_id = config["clip_agent"]["agent_id"]
+except KeyError:
+    default_agent_id = node()
+clip_parser.add_argument(
+    "--agent-id",
+    dest="agent_id",
+    metavar="ID",
+    help="Agent ID to use. Default: %(default)s",
+    default=default_agent_id,
+)
 clip_parser.add_argument(
     "--sleep",
-    help="Interval to sleep for before fetching new tasks (seconds).",
-    default=600,
+    metavar="N",
+    help="After finishing all available tasks, sleep N seconds before checking for new tasks. Default: %(default)s",
+    default=config["clip_agent"]["sleep"],
     type=int,
 )

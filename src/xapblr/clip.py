@@ -4,7 +4,7 @@ from queue import Queue
 import requests
 from requests.exceptions import JSONDecodeError, RequestException
 from signal import Signals, signal, SIGHUP, SIGINT, SIGTERM
-from sys import stderr
+from sys import exit, stderr
 from tempfile import TemporaryFile
 from threading import Event
 from time import time, time_ns, sleep
@@ -139,6 +139,19 @@ def submit_captions(endpoint, token, agent, tasks):
 
 
 def clip_cmd(args):
+    try:
+        profile = config["clip_agent"]["servers"][args.server]
+    except KeyError as e:
+        exit(f"Server profile {args.server} not configured")
+    try:
+        endpoint = profile["endpoint"]
+        token = profile["auth_token"]
+    except (KeyError, NameError) as e:
+        print(e)
+        exit(f"Server profile {args.server} misconfigured: missing key {e}")
+    agent = args.agent_id
+    sleep = args.sleep
+
     start = time()
     print("Launching CLIP agent... ", end="", flush=True)
     cptnr = Captioner()
@@ -159,7 +172,7 @@ def clip_cmd(args):
         print("Fetching tasks...", end=" ")
         fetch_success = False
         try:
-            (available, tasks) = get_tasks(args.endpoint, token, args.agent)
+            (available, tasks) = get_tasks(endpoint, token, agent)
         except RequestException as e:
             print(f"Error fetching tasks: {e}.", file=stderr, end=" ")
         except ValueError as e:
@@ -171,14 +184,14 @@ def clip_cmd(args):
             fetch_success = True
 
         if not fetch_success:
-            print(f"Retrying in {args.sleep} s.", file=stderr)
-            quit_ev.wait(args.sleep)
+            print(f"Retrying in {sleep} s.", file=stderr)
+            quit_ev.wait(sleep)
             continue
 
         if len(tasks) > 0:
             run(cptnr.process_batch(tasks))
-            submit_captions(args.endpoint, token, args.agent, tasks)
+            submit_captions(endpoint, token, agent, tasks)
 
         if available - len(tasks) == 0:
-            print(f"No more images in queue for now. Sleeping for {args.sleep} s.")
-            quit_ev.wait(args.sleep)
+            print(f"No more images in queue for now. Sleeping for {sleep} s.")
+            quit_ev.wait(sleep)
