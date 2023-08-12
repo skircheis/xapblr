@@ -17,6 +17,7 @@ prefixes = {
     "link": "XL",
     "has": "XM",
     "media": "F",
+    "image": "XI",
 }
 
 value_slots = {
@@ -59,6 +60,11 @@ def get_db(blog, mode="r"):
             db.close()
             return Database(db_path_str, DB_CREATE_OR_OPEN)
 
+def get_unique_term(doc):
+    for t in doc.termlist():
+        if t.term[0] == ord("Q"):
+            return t.term
+    return None
 
 def get_author(post):
     try:

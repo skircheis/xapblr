@@ -1,0 +1,10 @@
+[Unit]
+Description=Run a CLIP agent for xapblr
+
+[Service]
+ExecStart=xapblr clip %i
+Environment="XDG_CONFIG_HOME=%h/.config"
+Environment="XDG_DATA_HOME=%h/.local/share"
+
+[Install]
+WantedBy=default.target

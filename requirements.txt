@@ -2,3 +2,5 @@ pytumblr
 flask
 flask-assets
 dateparser
+sqlalchemy>=2.0
+requests

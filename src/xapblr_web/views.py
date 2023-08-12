@@ -1,5 +1,5 @@
 from argparse import Namespace
-from flask import render_template, request, Response, send_from_directory
+from flask import abort, render_template, request, Response, send_from_directory
 from importlib import metadata
 from json import dumps
 from time import time_ns
@@ -7,8 +7,12 @@ from xapblr_web import app
 
 from .utils import get_data_dir
 from xapblr.utils import fix_date_range
+from xapblr.config import config
+
+from .controllers.clip import clip_offer, clip_accept
 
 version = metadata.version("xapblr")
+
 
 @app.route("/")
 def index():
@@ -19,7 +23,9 @@ def index():
 @app.route("/<blog>/<query>", defaults={"page": 1})
 @app.route("/<blog>/<query>/page/<int:page>")
 def prefilled(blog, query, page):
-    return render_template("index.html", blog=blog, query=query, page=page, version=version)
+    return render_template(
+        "index.html", blog=blog, query=query, page=page, version=version
+    )
 
 
 @app.route("/list-blogs")
@@ -73,3 +79,31 @@ def search():
     out["meta"]["count"] = len(out["results"])
 
     return Response(dumps(out), mimetype="application/json")
+
+def clip_authenticate(token):
+    try:
+        if token != config["clip"]["auth_token"]:
+            abort(401)
+    except KeyError:
+        abort(500)
+
+@app.route("/clip", methods=["GET"])
+def clip_offer_view():
+    clip_authenticate(request.args.get("auth_token", ""))
+    try:
+        agent = request.args["agent"]
+    except KeyError:
+        abort(400)
+    out = clip_offer(request.args)
+    return Response(dumps(out), mimetype="application/json")
+
+
+@app.route("/clip", methods=["POST"])
+def clip_accept_view():
+    data = request.json
+    clip_authenticate(data.get("auth_token", ""))
+
+    imgs = data.get("images", None) or abort(400)
+    imgs = {i["id"]: i for i in imgs}
+    clip_accept(imgs)
+    return Response("{}", mimetype="application/json")
