@@ -81,6 +81,30 @@ uwsgi --ini ~/.config/xapblr/uwsgi.ini
 ```
 If running as a `systemd` service, repoint it through `systemctl --user edit xapblr-web`.
 
+## CLIP generation of captions
+
+`xapblr` can caption images in posts using [Open CLIP}(https://github.com/mlfoundations/open_clip).
+Because this is costly, it is optional and runs asynchronously on a client-server model.
+To enable captioning, first configure an authentication token in `$XDG_CONFIG_HOME/xapblr/config.json`:
+```json
+{
+    ...
+    "clip": {"auth_token": <secret> },
+    ...
+}
+```
+Then install Open CLIP and launch a captioning agent
+```sh
+pip install open-clip-torch
+xapblr clip --sleep N http://localhost:5000/clip <agent-id>
+```
+The agent will loop fetching a batch of tasks from the server, trying to caption them with Open CLIP, and submitting the results back to the server.
+If there are no tasks available the agent sleeps for `N` seconds (default: 600) before checking again.
+A captioning agent does not need to run on the same machine as the server; simply configure the authentication token and change `localhost:5000` as appropriate.
+Likewise, any number of captioning agents can run against the same server.
+An optional `agent-id` can be provided for the server to know which agent captioned an image;
+the default is the hostname of the machine running the agent.
+
 ## Rebuilding
 
 As `xapblr` is developed the indexing of posts may change to fix bugs or add

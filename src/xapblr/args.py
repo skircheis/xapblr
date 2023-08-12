@@ -1,5 +1,7 @@
 from argparse import ArgumentParser, Action, BooleanOptionalAction
+from platform import node
 
+from .clip import clip_cmd
 from .index import index
 from .list import list_cmd
 from .rebuild import rebuild
@@ -210,3 +212,14 @@ server_parser.add_argument(
 
 list_parser = subparsers.add_parser("list", help="List indexed blogs")
 list_parser.set_defaults(func=list_cmd)
+
+clip_parser = subparsers.add_parser("clip", help="Launch a CLIP agent.")
+clip_parser.set_defaults(func=clip_cmd)
+clip_parser.add_argument("endpoint", help="The endpoint to communicate with.")
+clip_parser.add_argument("agent", help="Agent ID to use.", nargs="?", default=node())
+clip_parser.add_argument(
+    "--sleep",
+    help="Interval to sleep for before fetching new tasks (seconds).",
+    default=600,
+    type=int,
+)

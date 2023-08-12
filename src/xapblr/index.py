@@ -3,6 +3,8 @@ from datetime import datetime
 from json import dumps
 from math import ceil
 import pytumblr
+from sqlalchemy import select
+from sqlalchemy.orm import joinedload
 import sys
 from xapian import (
     Document,
@@ -16,10 +18,13 @@ from time import sleep
 from urllib.parse import urlparse
 
 from .config import config
+from .models.image import Image, ImageState, ImageInPost
+from .db import db as sqldb
 from .search import get_latest
 from .utils import (
     get_author,
     get_db,
+    get_unique_term,
     encode_tag,
     format_timestamp,
     prefixes,
@@ -27,11 +32,11 @@ from .utils import (
 )
 
 
-def index_text(block, tg):
+def index_text(block, tg, out_data):
     tg.index_text(block["text"])
 
 
-def index_link(block, tg):
+def index_link(block, tg, out_data):
     doc = tg.get_document()
     url_prefix = "https://href.li/?"
     url = block["url"].removeprefix(url_prefix)
@@ -46,7 +51,7 @@ def index_link(block, tg):
     tg.index_text(block["description"])
 
 
-def index_image(block, tg):
+def index_image(block, tg, out_data):
     for m in block["media"]:
         if m.get("type", None) == "image/gif":
             tg.get_document().add_term(prefixes["has"] + "gif")
@@ -56,13 +61,25 @@ def index_image(block, tg):
         if media_key:
             tg.get_document().add_term(prefixes["media"] + media_key)
             break
+
+    mw = 0
+    url = None
+    for m in block["media"]:
+        if m["width"] > mw:
+            url = m["url"]
+        if m.get("has_original_dimensions", False):
+            break
+    if media_key is None:
+        media_key = urlparse(url).path
+    out_data["images"][media_key] = {"media_key": media_key, "url": url}
+
     try:
         tg.index_text(block["alt_text"])
     except KeyError:
         pass
 
 
-def index_poll(block, tg):
+def index_poll(block, tg, out_data):
     tg.index_text(block["question"])
     for a in block["answers"]:
         tg.index_text(a["answer_text"])
@@ -76,14 +93,14 @@ block_indexers = {
 }
 
 
-def index_content(post, tg):
+def index_content(post, tg, out_data):
     doc = tg.get_document()
     for block in post["content"]:
         if block["type"] != "text":
             has_term = prefixes["has"] + block["type"]
             doc.add_term(has_term)
         try:
-            block_indexers[block["type"]](block, tg)
+            block_indexers[block["type"]](block, tg, out_data)
         except KeyError:
             pass
     doc.add_term(prefixes["author"] + get_author(post))
@@ -92,6 +109,8 @@ def index_content(post, tg):
 def index_post(post, tg):
     doc = Document()
     tg.set_document(doc)
+    # data for post-processing after seeing the whole post
+    out_data = {"images": {}}
 
     if len(post["trail"]) > 0:
         op = get_author(post["trail"][0])
@@ -100,8 +119,8 @@ def index_post(post, tg):
     doc.add_term(prefixes["op"] + op)
 
     for t in post["trail"]:
-        index_content(t, tg)
-    index_content(post, tg)
+        index_content(t, tg, out_data)
+    index_content(post, tg, out_data)
 
     for t in post["tags"]:
         doc.add_term(encode_tag(t))
@@ -112,7 +131,7 @@ def index_post(post, tg):
     id_term = "Q" + str(post["id"])
     doc.add_boolean_term(id_term)
 
-    return (id_term, doc)
+    return (id_term, doc, out_data)
 
 
 def index(args):
@@ -132,7 +151,9 @@ def index(args):
         blog = client.blog_info(args.blog)["blog"]
     except KeyError:
         print()
-        print(f"Blog does not exist or API key owner is blocked by it.", file=sys.stderr)
+        print(
+            f"Blog does not exist or API key owner is blocked by it.", file=sys.stderr
+        )
         # TODO: this should probably throw instead
         return
     full = False
@@ -180,6 +201,7 @@ def index(args):
 
     pages = 1
     commit_every = 10
+    images = {}
     while fetch:
         response = client.posts(args.blog, npf=True, **kwargs)
         posts = response["posts"]
@@ -189,13 +211,21 @@ def index(args):
         n += len(posts)
 
         for p in posts:
-            (id_term, post_doc) = index_post(p, tg)
-            db.replace_document(id_term, post_doc)
+            (id_term, post_doc, out_data) = index_post(p, tg)
+            did = db.replace_document(id_term, post_doc)
+            for k, v in out_data["images"].items():
+                if k in images.keys():
+                    images[k]["posts"].append(did)
+                else:
+                    images[k] = v
+                    images[k]["posts"] = [did]
             kwargs["before"] = p["timestamp"]
 
         if pages % commit_every == 0:
             print("*", end="", flush=True)
             db.commit()
+            queue_images(db, images, args.blog)
+            images = {}
         else:
             print(".", end="", flush=True)
         if "_links" not in response.keys():
@@ -206,5 +236,50 @@ def index(args):
         pages += 1
         sleep(throttle)
 
+    queue_images(db, images, args.blog)
     print()
     print(f"Done; indexed {n} posts.")
+
+
+def queue_images(db, imgs, blog):
+    with sqldb.session() as s:
+        existing_imgs_q = (
+            select(Image)
+            .options(joinedload(Image.posts))
+            .where(Image.media_key.in_(imgs.keys()))
+        )
+        img_objs = {}
+        tg = TermGenerator()
+        for img in s.scalars(existing_imgs_q).unique():
+            ps = [(p.blog, p.post_id) for p in img.posts]
+            for did in imgs[img.media_key]["posts"]:
+                if (blog, did) not in ps:
+                    img.posts.append(ImageInPost(blog=blog, post_id=did, image=img))
+                add_caption_to_doc(db, did, tg, img.caption)
+            img_objs[img.media_key] = img
+
+        new_img_objs = [
+            Image(
+                media_key=v["media_key"],
+                url=v["url"],
+                state=ImageState.AVAILABLE,
+                created=int(time()),
+                posts=[ImageInPost(blog=blog, post_id=did) for did in v["posts"]],
+            )
+            for k, v in imgs.items()
+            if k not in img_objs.keys()
+        ]
+        s.add_all(new_img_objs)
+        s.commit()
+
+def add_caption_to_doc(db, did, tg, caption):
+    if caption is None:
+        return
+    try:
+        doc = db.get_document(did)
+    except DocNotFoundError:
+        return
+    id_term = get_unique_term(doc)
+    tg.set_document(doc)
+    tg.index_text(caption, 1, prefixes["image"])
+    db.replace_document(id_term, doc)

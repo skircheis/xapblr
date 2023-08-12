@@ -25,8 +25,10 @@ The default connective is `AND`.
     Match posts that link to `<domain>` or any of its subdomains. E.g.,
     `link:wikipedia.org` matches both posts with links to `en.wikipedia.org`
     and `jp.wikipedia.org.`
-*  `has:(audio|image|gif|link|poll|video)`
-     Match posts that contain the specified content type.
+* `has:(audio|image|gif|link|poll|video)`
+    Match posts that contain the specified content type.
+* `image:<word-or-quoted-phrase>`
+    Match terms in CLIP-generated captions. (See CLIP section of README.)
 
 ## Caveats
 
