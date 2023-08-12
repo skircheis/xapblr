@@ -3,8 +3,9 @@ from flask_assets import Environment, Bundle
 from flask_login import LoginManager
 from subprocess import Popen, PIPE
 
-from xapblr.config import config
+from ..config import config
 from .utils import get_data_dir
+from .controllers.setup import setup
 
 
 def pandoc_filter(_in, out, **kwargs):
@@ -27,6 +28,7 @@ if config["multi_user"]:
         sys.exit(
             f"In multi-user mode, a secret_key must be configured. Here is one you can use: {key}."
         )
+    setup()
 
 assets = Environment(app)
 assets.url = "assets"

@@ -9,5 +9,11 @@
         "invite_lifetime": "1 week",
         "password_reset_lifetime": "1 week",
         "email_change_lifetime": "1 week"
+    },
+    "clip": {
+        "batch_size": 10
+    },
+    "clip_agent": {
+        "sleep": 600
     }
 }

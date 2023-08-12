@@ -5,8 +5,11 @@ from time import time_ns
 from sqlalchemy import select
 
 from ..config import config
-from ..database import db, User
+from ..models.user import User
+from ..db import get_db
 from ..utils import fix_date_range, get_data_dir
+
+from .controllers.clip import clip_offer, clip_accept
 
 from flask import (
     redirect,
@@ -66,6 +69,7 @@ def do_login():
     except KeyError:
         return JSONResponse({"success": False, "message": "password required"})
 
+    db = get_db()
     with db.session() as s:
         q = select(User).where((User.name == user) | (User.email == user))
         authenticated = None
@@ -150,3 +154,31 @@ def list_blogs():
 @app.route("/assets/<path:path>")
 def send_static(path):
     return send_from_directory(str(get_data_dir() / ".webstatic"), path)
+
+def clip_authenticate(token):
+    try:
+        if token != config["clip"]["auth_token"]:
+            abort(401)
+    except KeyError:
+        abort(500)
+
+@app.route("/clip", methods=["GET"])
+def clip_offer_view():
+    clip_authenticate(request.args.get("auth_token", ""))
+    try:
+        agent = request.args["agent"]
+    except KeyError:
+        abort(400)
+    out = clip_offer(request.args)
+    return Response(dumps(out), mimetype="application/json")
+
+
+@app.route("/clip", methods=["POST"])
+def clip_accept_view():
+    data = request.json
+    clip_authenticate(data.get("auth_token", ""))
+
+    imgs = data.get("images", None) or abort(400)
+    imgs = {i["id"]: i for i in imgs}
+    clip_accept(imgs)
+    return Response("{}", mimetype="application/json")

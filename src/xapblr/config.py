@@ -5,6 +5,17 @@ from sys import exit, stderr
 
 from .utils import get_xdg_config_home
 
+# Copied from pydantic.utils
+# https://github.com/pydantic/pydantic/blob/main/pydantic/_internal/_utils.py
+def deep_update(mapping, *updating_mappings):
+    updated_mapping = mapping.copy()
+    for updating_mapping in updating_mappings:
+        for k, v in updating_mapping.items():
+            if k in updated_mapping and isinstance(updated_mapping[k], dict) and isinstance(v, dict):
+                updated_mapping[k] = deep_update(updated_mapping[k], v)
+            else:
+                updated_mapping[k] = v
+    return updated_mapping
 
 class Config:
     def __init__(self):
@@ -28,7 +39,7 @@ class Config:
         try:
             with config_file.open() as f:
                 cfg = load(f)
-                self._config.update(cfg)
+                self._config = deep_update(self._config, cfg)
         except IOError as e:
             print(f"Could not read config from {key_file}: {e}", file=sys.stderr)
         except JSONDecodeError as e:
@@ -36,5 +47,7 @@ class Config:
 
     def __getitem__(self, key):
         return self._config[key]
+    def get(self, key, default=None):
+        return self._config.get(key, default)
 
 config = Config()

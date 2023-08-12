@@ -81,6 +81,47 @@ uwsgi --ini ~/.config/xapblr/uwsgi.ini
 ```
 If running as a `systemd` service, repoint it through `systemctl --user edit xapblr-web`.
 
+## CLIP generation of captions
+
+`xapblr` can caption images in posts using [Open CLIP}(https://github.com/mlfoundations/open_clip).
+Because this is costly, it is optional and runs asynchronously on a client-server model.
+To enable captioning, first configure an authentication token and a server profile in `$XDG_CONFIG_HOME/xapblr/config.json`:
+```json
+{
+    ...
+    "clip": {"auth_token": <secret> },
+    "clip_agent": {
+        "servers": {
+            "localhost": {
+                "endpoint": "http://localhost:5000/clip",
+                "auth_token": <secret>
+            }
+        }
+    }
+    ...
+}
+```
+Then install Open CLIP and launch a captioning agent
+```sh
+pip install open-clip-torch
+xapblr clip localhost
+```
+The agent will loop fetching a batch of tasks from `http://localhost:5000/clip`, trying to caption them with Open CLIP, and submitting the results back to the server.
+If there are no tasks available the agent sleeps before checking again;
+the time slept can be set with the `--sleep` argument or as `clip_agent.sleep = N` in the configuration file.
+As you may have guessed a captioning agent does not need to run on the same machine as the server.
+Simply configure the endpoint and authentication token as appropriate.
+Likewise, any number of captioning agents can run against the same server.
+An optional `clip_agent.agent_id` can be provided for the server to know which agent captioned an image;
+it can be set with `--agent-id` on the command line.
+The default is to use the hostname of the machine running the agent.
+
+Clip agents can be run as systemd units.
+Viz. in the above case we would run
+```sh
+systemctl --user enable --now xapblr-clip-agent@localhost
+```
+
 ## Rebuilding
 
 As `xapblr` is developed the indexing of posts may change to fix bugs or add
@@ -109,11 +150,12 @@ posts that you know have been edited on Tumblr, pass suitable options to
 
 ## Dependencies: ##
  * Python 3 and
-   * `pytumblr`
-   * `xapian`
-   * `dateparser`
-   * `flask` plus `flask-assets`, `flask-login`, `flask-sqlalchemy` (for the web interface)
-   * `sqlalchemy>=2.0`
+ * * `pytumblr`
+ * * `xapian`
+ * * `dateparser`
+ * * `flask` and `flask-assets` (for the web interface)
+ * * `sqlalchemy>=2.0`
+ * * `open-clip-torch` (optional, to generate and index captions for images)
    * `humanfriendly` (optional, for some nicer log messages)
  * `uwsgi` (for the web interface)
  * `sass`

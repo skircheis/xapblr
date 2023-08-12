@@ -5,3 +5,4 @@ flask-login
 flask-sqlalchemy
 dateparser
 sqlalchemy>=2.0
+requests

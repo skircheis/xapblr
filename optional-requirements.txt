@@ -1,3 +1,2 @@
-flask
-flask-assets
 humanfriendly
+open-clip-torch

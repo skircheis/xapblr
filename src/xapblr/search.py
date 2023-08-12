@@ -29,6 +29,10 @@ def search_command(args):
         print(out)
 
 
+class ImageProcessor(FieldProcessor):
+    pass
+
+
 class TagProcessor(FieldProcessor):
     def __call__(self, args):
         return Query(encode_tag(args))
@@ -76,9 +80,11 @@ def search(args):
 
     qp.add_rangeprocessor(DateRangeProcessor(value_slots["timestamp"], "date:"))
 
-    qp.add_boolean_prefix("author", prefixes["author"])
-    qp.add_boolean_prefix("op", prefixes["op"])
-    qp.add_boolean_prefix("link", prefixes["link"])
+    [
+        qp.add_boolean_prefix(p, prefixes[p])
+        for p in ["author", "has", "link", "media", "op"]
+    ]
+    qp.add_prefix("image", prefixes["image"])
     qp.add_boolean_prefix("tag", TagProcessor())
 
     qstr = " ".join(args.search)
