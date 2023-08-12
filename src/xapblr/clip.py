@@ -3,8 +3,10 @@ from PIL import Image
 from queue import Queue
 import requests
 from requests.exceptions import JSONDecodeError, RequestException
+from signal import Signals, signal, SIGHUP, SIGINT, SIGTERM
 from sys import stderr
 from tempfile import TemporaryFile
+from threading import Event
 from time import time, time_ns, sleep
 
 from .config import config
@@ -142,8 +144,18 @@ def clip_cmd(args):
     cptnr = Captioner()
     dt = time() - start
     print(f"Loaded model onto GPU in {dt:.2f} s.")
+
     token = config["clip"]["auth_token"]
-    while True:
+    quit_ev = Event()
+
+    def quit_f(signo, _frame):
+        signame = Signals(signo).name
+        print(f"Received {signame}, finishing up and exiting.")
+        quit_ev.set()
+
+    [signal(sig, quit_f) for sig in [SIGHUP, SIGINT, SIGTERM]]
+
+    while not quit_ev.is_set():
         print("Fetching tasks...", end=" ")
         fetch_success = False
         try:
@@ -160,14 +172,13 @@ def clip_cmd(args):
 
         if not fetch_success:
             print(f"Retrying in {args.sleep} s.", file=stderr)
-            sleep(args.sleep)
+            quit_ev.wait(args.sleep)
             continue
 
-        run(cptnr.process_batch(tasks))
-
         if len(tasks) > 0:
+            run(cptnr.process_batch(tasks))
             submit_captions(args.endpoint, token, args.agent, tasks)
 
         if available - len(tasks) == 0:
             print(f"No more images in queue for now. Sleeping for {args.sleep} s.")
-            sleep(args.sleep)
+            quit_ev.wait(args.sleep)
