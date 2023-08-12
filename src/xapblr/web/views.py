@@ -1,7 +1,7 @@
 from argparse import Namespace
 from importlib import metadata
 from json import dumps
-from time import time_ns
+from time import time, time_ns
 from sqlalchemy import select
 
 from ..config import config
@@ -78,11 +78,13 @@ def do_login():
                 authenticated = c
                 break
 
-    if authenticated is not None:
-        login_user(authenticated)
-        return JSONResponse({"success": True, "message": f"Welcome {authenticated.name}"})
-    else:
-        return JSONResponse({"success": False, "message": "invalid credentials"})
+        if authenticated is not None:
+            authenticated.last_seen = int(time())
+            login_user(authenticated)
+            s.commit()
+            return JSONResponse({"success": True, "message": f"Welcome {authenticated.name}"})
+        else:
+            return JSONResponse({"success": False, "message": "invalid credentials"})
 
 
 @app.route("/logout")
