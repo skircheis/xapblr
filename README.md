@@ -154,6 +154,8 @@ posts that you know have been edited on Tumblr, pass suitable options to
  * * `xapian`
  * * `dateparser`
  * * `flask` and `flask-assets` (for the web interface)
+ * * `sqlalchemy>=2.0`
+ * * `open-clip-torch` (optional, to generate and index captions for images)
    * `humanfriendly` (optional, for some nicer log messages)
  * `uwsgi` (for the web interface)
  * `sass`
