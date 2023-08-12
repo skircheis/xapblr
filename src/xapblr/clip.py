@@ -7,7 +7,7 @@ from signal import Signals, signal, SIGHUP, SIGINT, SIGTERM
 from sys import exit, stderr
 from tempfile import TemporaryFile
 from threading import Event
-from time import time, time_ns, sleep
+from time import time, time_ns
 
 from .config import config
 
@@ -141,7 +141,7 @@ def submit_captions(endpoint, token, agent, tasks):
 def clip_cmd(args):
     try:
         profile = config["clip_agent"]["servers"][args.server]
-    except KeyError as e:
+    except KeyError:
         exit(f"Server profile {args.server} not configured")
     try:
         endpoint = profile["endpoint"]

@@ -28,8 +28,10 @@ def search_command(args):
         out = renderers[args.renderer](m, args)
         print(out)
 
+
 class ImageProcessor(FieldProcessor):
     pass
+
 
 class TagProcessor(FieldProcessor):
     def __call__(self, args):

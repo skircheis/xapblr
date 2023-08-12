@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 import sys
 from xapian import (
+    DocNotFoundError,
     Document,
     Stem,
     TermGenerator,
@@ -152,7 +153,7 @@ def index(args):
     except KeyError:
         print()
         print(
-            f"Blog does not exist or API key owner is blocked by it.", file=sys.stderr
+            "Blog does not exist or API key owner is blocked by it.", file=sys.stderr
         )
         # TODO: this should probably throw instead
         return
@@ -271,6 +272,7 @@ def queue_images(db, imgs, blog):
         ]
         s.add_all(new_img_objs)
         s.commit()
+
 
 def add_caption_to_doc(db, did, tg, caption):
     if caption is None:
