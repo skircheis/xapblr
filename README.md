@@ -116,6 +116,12 @@ An optional `clip_agent.agent_id` can be provided for the server to know which a
 it can be set with `--agent-id` on the command line.
 The default is to use the hostname of the machine running the agent.
 
+Clip agents can be run as systemd units.
+Viz. in the above case we would run
+```sh
+systemctl --user enable --now xapblr-clip-agent@localhost
+```
+
 ## Rebuilding
 
 As `xapblr` is developed the indexing of posts may change to fix bugs or add
