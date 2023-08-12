@@ -4,6 +4,7 @@ from typing import Optional
 
 from .base import Base
 
+
 class Invite(Base):
     __tablename__ = "invites"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -17,4 +18,3 @@ class Invite(Base):
 
     invitee_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id"))
     invitee: Mapped[Optional["User"]] = relationship(foreign_keys=[invitee_id])
-

@@ -5,7 +5,7 @@ from secrets import token_hex
 
 from sqlalchemy import ForeignKey, String, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import List, Optional
+from typing import Optional
 
 from ..db import get_db
 from .base import Base
@@ -23,6 +23,7 @@ StatusE = StrEnum(
 )
 PrivilegeE = StrEnum("Privilege", ["ROOT", "ADMIN", "USER"])
 
+
 class Privilege(Base):
     __tablename__ = "privileges"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -33,7 +34,6 @@ class Status(Base):
     __tablename__ = "statuses"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
-
 
 
 class User(Base, UserMixin):
