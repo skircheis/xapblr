@@ -85,25 +85,36 @@ If running as a `systemd` service, repoint it through `systemctl --user edit xap
 
 `xapblr` can caption images in posts using [Open CLIP}(https://github.com/mlfoundations/open_clip).
 Because this is costly, it is optional and runs asynchronously on a client-server model.
-To enable captioning, first configure an authentication token in `$XDG_CONFIG_HOME/xapblr/config.json`:
+To enable captioning, first configure an authentication token and a server profile in `$XDG_CONFIG_HOME/xapblr/config.json`:
 ```json
 {
     ...
     "clip": {"auth_token": <secret> },
+    "clip_agent": {
+        "servers": {
+            "localhost": {
+                "endpoint": "http://localhost:5000/clip",
+                "auth_token": <secret>
+            }
+        }
+    }
     ...
 }
 ```
 Then install Open CLIP and launch a captioning agent
 ```sh
 pip install open-clip-torch
-xapblr clip --sleep N http://localhost:5000/clip <agent-id>
+xapblr clip localhost
 ```
-The agent will loop fetching a batch of tasks from the server, trying to caption them with Open CLIP, and submitting the results back to the server.
-If there are no tasks available the agent sleeps for `N` seconds (default: 600) before checking again.
-A captioning agent does not need to run on the same machine as the server; simply configure the authentication token and change `localhost:5000` as appropriate.
+The agent will loop fetching a batch of tasks from `http://localhost:5000/clip`, trying to caption them with Open CLIP, and submitting the results back to the server.
+If there are no tasks available the agent sleeps before checking again;
+the time slept can be set with the `--sleep` argument or as `clip_agent.sleep = N` in the configuration file.
+As you may have guessed a captioning agent does not need to run on the same machine as the server.
+Simply configure the endpoint and authentication token as appropriate.
 Likewise, any number of captioning agents can run against the same server.
-An optional `agent-id` can be provided for the server to know which agent captioned an image;
-the default is the hostname of the machine running the agent.
+An optional `clip_agent.agent_id` can be provided for the server to know which agent captioned an image;
+it can be set with `--agent-id` on the command line.
+The default is to use the hostname of the machine running the agent.
 
 ## Rebuilding
 
