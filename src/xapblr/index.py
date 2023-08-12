@@ -152,9 +152,7 @@ def index(args):
         blog = client.blog_info(args.blog)["blog"]
     except KeyError:
         print()
-        print(
-            "Blog does not exist or API key owner is blocked by it.", file=sys.stderr
-        )
+        print("Blog does not exist or API key owner is blocked by it.", file=sys.stderr)
         # TODO: this should probably throw instead
         return
     full = False
@@ -214,12 +212,7 @@ def index(args):
         for p in posts:
             (id_term, post_doc, out_data) = index_post(p, tg)
             did = db.replace_document(id_term, post_doc)
-            for k, v in out_data["images"].items():
-                if k in images.keys():
-                    images[k]["posts"].append(did)
-                else:
-                    images[k] = v
-                    images[k]["posts"] = [did]
+            append_images(images, out_data, did)
             kwargs["before"] = p["timestamp"]
 
         if pages % commit_every == 0:
@@ -272,6 +265,15 @@ def queue_images(db, imgs, blog):
         ]
         s.add_all(new_img_objs)
         s.commit()
+
+
+def append_images(images, out_data, did):
+    for k, v in out_data["images"].items():
+        if k in images.keys():
+            images[k]["posts"].append(did)
+        else:
+            images[k] = v
+            images[k]["posts"] = [did]
 
 
 def add_caption_to_doc(db, did, tg, caption):
