@@ -12,9 +12,10 @@ from xapian import (
     sortable_unserialise,
 )
 
+from .blog import BlogIndex
 from .date_parser import parse_date
 from .render import renderers
-from .utils import get_db, encode_tag, prefixes, value_slots
+from .utils import encode_tag, prefixes, value_slots
 
 
 def search_command(args):
@@ -59,6 +60,7 @@ class DateRangeProcessor(RangeProcessor):
             raise QueryParserError(str(e))
         return Query(Query.OP_VALUE_RANGE, self.slot, begin, end)
 
+
 class XapblrQueryParser(QueryParser):
     def __init__(self):
         QueryParser.__init__(self)
@@ -88,7 +90,6 @@ def search(args):
         "pagesize": pagesize,
     }
 
-    db = get_db(args.blog, "r")
     qp = XapblrQueryParser()
 
     qstr = " ".join(args.search)
@@ -99,6 +100,7 @@ def search(args):
         meta["error"] = str(e)
         return (meta, iter([]))
 
+    db = BlogIndex(args.blog, "r").get_db()
     enq = Enquire(db)
     if args.sort == "newest":
         enq.set_sort_by_value_then_relevance(0, True)
@@ -118,6 +120,7 @@ def search(args):
                 doc = match.document
                 post_json = doc.get_data().decode("utf-8")
                 yield loads(post_json)
+            db.close()
 
         match_iter = match_iterf()
 
@@ -125,20 +128,20 @@ def search(args):
 
 
 def get_end(src, latest=True):
-    if type(src) == str:
-        db = get_db(src)
+    if type(src) is str:
+        ind = BlogIndex(src)
     elif isinstance(src, Database):
-        db = src
+        ind = src
     else:
         raise TypeError(f"expected xapian database or string, got {type(src)}")
-    if db.get_doccount() == 0:
-        return None
-
-    enq = Enquire(db)
-    enq.set_query(Query.MatchAll)
-    enq.set_sort_by_value_then_relevance(0, latest)
-    latest = enq.get_mset(0, 1)[0].document
-    return sortable_unserialise(latest.get_value(0))
+    with ind as db:
+        if db.get_doccount() == 0:
+            return None
+        enq = Enquire(db)
+        enq.set_query(Query.MatchAll)
+        enq.set_sort_by_value_then_relevance(0, latest)
+        latest = enq.get_mset(0, 1)[0].document
+        return sortable_unserialise(latest.get_value(0))
 
 
 def get_latest(src):

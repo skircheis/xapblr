@@ -1,11 +1,15 @@
 from json import loads
 from xapian import Enquire, Query, TermGenerator
+from .blog import BlogIndex
 from .index import index_post, append_images, queue_images
-from .utils import get_db
 
 
 def rebuild(args):
-    db = get_db(args.blog, "w")
+    with BlogIndex(args.blog, "w") as db:
+        _rebuild(args.blog, db)
+
+
+def _rebuild(url, db):
     count = db.get_doccount()
     if count == 0:
         return
@@ -27,7 +31,7 @@ def rebuild(args):
             (id_term, post_doc, out_data) = index_post(loads(old.get_data()), tg)
             did = db.replace_document(id_term, post_doc)
             append_images(images, out_data, did)
-        queue_images(db, images, args.blog)
+        queue_images(db, images, url)
         offset += perpage
         print(".", end="", flush=True)
     print()

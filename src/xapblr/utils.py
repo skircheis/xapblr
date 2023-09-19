@@ -4,8 +4,6 @@ from os import environ
 from re import sub
 from urllib.parse import quote as urlencode
 
-from xapian import Database, WritableDatabase, DatabaseNotFoundError, DB_CREATE_OR_OPEN
-
 prefixes = {
     "content": "XC",
     "op": "XOP",
@@ -31,6 +29,7 @@ def get_xdg_config_home():
     except KeyError:
         return Path(environ["HOME"]) / ".config"
 
+
 def get_xdg_data_home():
     try:
         return Path(environ["XDG_DATA_HOME"])
@@ -42,29 +41,12 @@ def get_data_dir():
     return get_xdg_data_home() / "xapblr"
 
 
-def get_db(blog, mode="r"):
-    # returns a xapian database object for the specified blog
-    # mode = 'r' for reading, 'w' for writing
-    db_path = get_data_dir() / blog
-    db_path.mkdir(parents=True, exist_ok=True)
-    db_path_str = str(db_path)
-    if mode == "w":
-        return WritableDatabase(db_path_str, DB_CREATE_OR_OPEN)
-    else:
-        try:
-            return Database(db_path_str, DB_CREATE_OR_OPEN)
-        except DatabaseNotFoundError:
-            # if the database does not already exist, it must be created
-            # writable
-            db = WritableDatabase(db_path_str, DB_CREATE_OR_OPEN)
-            db.close()
-            return Database(db_path_str, DB_CREATE_OR_OPEN)
-
 def get_unique_term(doc):
     for t in doc.termlist():
         if t.term[0] == ord("Q"):
             return t.term
     return None
+
 
 def get_author(post):
     try:

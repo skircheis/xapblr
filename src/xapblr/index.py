@@ -18,13 +18,13 @@ from time import sleep
 
 from urllib.parse import urlparse
 
+from .blog import BlogIndex
 from .config import config
 from .models.image import Image, ImageState, ImageInPost
 from .db import get_db as get_sqldb
 from .search import get_latest
 from .utils import (
     get_author,
-    get_db,
     get_unique_term,
     encode_tag,
     format_timestamp,
@@ -169,7 +169,6 @@ def index(args):
             if args.since is None:
                 args.since = latest_ts
 
-    db = get_db(args.blog, "w")
     tg = TermGenerator()
     if args.stemmer is not None:
         tg.set_stemmer(Stem(args.stemmer))
@@ -201,36 +200,37 @@ def index(args):
     pages = 1
     commit_every = 10
     images = {}
-    while fetch:
-        response = client.posts(args.blog, npf=True, **kwargs)
-        posts = response["posts"]
+    with BlogIndex(args.blog, "w") as db:
+        while fetch:
+            response = client.posts(args.blog, npf=True, **kwargs)
+            posts = response["posts"]
 
-        if len(posts) == 0:
-            break
-        n += len(posts)
+            if len(posts) == 0:
+                break
+            n += len(posts)
 
-        for p in posts:
-            (id_term, post_doc, out_data) = index_post(p, tg)
-            did = db.replace_document(id_term, post_doc)
-            append_images(images, out_data, did)
-            kwargs["before"] = p["timestamp"]
+            for p in posts:
+                (id_term, post_doc, out_data) = index_post(p, tg)
+                did = db.replace_document(id_term, post_doc)
+                append_images(images, out_data, did)
+                kwargs["before"] = p["timestamp"]
 
-        if pages % commit_every == 0:
-            print("*", end="", flush=True)
-            db.commit()
-            queue_images(db, images, args.blog)
-            images = {}
-        else:
-            print(".", end="", flush=True)
-        if "_links" not in response.keys():
-            break
-        if args.since is not None and args.since >= kwargs["before"]:
-            break
+            if pages % commit_every == 0:
+                print("*", end="", flush=True)
+                db.commit()
+                queue_images(db, images, args.blog)
+                images = {}
+            else:
+                print(".", end="", flush=True)
+            if "_links" not in response.keys():
+                break
+            if args.since is not None and args.since >= kwargs["before"]:
+                break
 
-        pages += 1
-        sleep(throttle)
+            pages += 1
+            sleep(throttle)
 
-    queue_images(db, images, args.blog)
+        queue_images(db, images, args.blog)
     print()
     print(f"Done; indexed {n} posts.")
 

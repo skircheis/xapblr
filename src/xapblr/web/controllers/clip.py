@@ -1,11 +1,11 @@
 from sqlalchemy import func, select
 from sqlalchemy.orm import joinedload
 
+from ...blog import BlogIndex
 from ...config import config
 from ...index import add_caption_to_doc
 from ...models.image import Image, ImageState
 from ...db import get_db as get_sqldb
-from ...utils import get_db
 
 from time import time
 from xapian import TermGenerator
@@ -28,9 +28,9 @@ def accept(imgs):
 
             for p in img.posts:
                 if p.blog not in dbs.keys():
-                    dbs[p.blog] = get_db(p.blog, "w")
-                x = dbs[p.blog]
-                add_caption_to_doc(x, p.post_id, tg, img.caption)
+                    dbs[p.blog] = BlogIndex(p.blog, "w")
+                with dbs[p.blog] as x:
+                    add_caption_to_doc(x, p.post_id, tg, img.caption)
         s.commit()
 
 
