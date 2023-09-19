@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <title>xapblr v{{version}}</title>
+    <head>
+        <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-bold-straight/css/uicons-bold-straight.css'>
+        {% assets "js" %}
+        <script type="text/javascript" src="/{{ASSET_URL}}"></script>
+        {% endassets %}
+        {% assets "css" %}
+        <link rel="stylesheet" type="text/css" href="/{{ASSET_URL}} ">
+        {% endassets %}
+        {% block head %}
+        {% endblock %}
+    </head>
+    <body>
+        <div id="grid">
+            <div id="sidebar">
+                {% include "menu.html.jinja" %}
+                <div id="help"></div>
+                {% include "about.html.jinja" %}
+            </div>
+            {% block body %}
+            {% endblock %}
+
+    </body>
+    {% block foot %}
+    {% endblock %}
+
+</html>

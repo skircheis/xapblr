@@ -1,122 +1,108 @@
- <!DOCTYPE html>
-<html>
-    <title>xapblr v{{version}}</title>
-    <head>
-        <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-bold-straight/css/uicons-bold-straight.css'>
-        {% assets "js" %}
-        <script type="text/javascript" src="/{{ASSET_URL}}"></script>
-        {% endassets %}
-        <script>
-            {% assets "md" %}
-                function xapblr_onload() {
-                    getHTML('/{{ASSET_URL}}', (response)=> {
-                        document.querySelector("#help").innerHTML=response
-                    })
-                    var search_form = document.querySelector("#search-form");
-                    var blog = document.querySelector("#blogurl");
-                    var query = document.querySelector("#query");
-                    search_form.addEventListener("submit", search_handler)
-                    if( blog.value != "" ){
-                        query.focus();
-                        if(  query.value != ""){
-                            query.selectionStart = query.selectionEnd = query.value.length;
-                            search(search_form);
-                        }
-                    } else {
-                        blog.focus();
-                    }
-                    var pager = document.querySelector("#page");
-                    pager.addEventListener("input", () => paginate(search_form));
+{%extends "base.html.jinja" %}
+{% block head %}
+<script>
+    {% assets "md" %}
+    window.onload = () => {
+        getHTML('/{{ASSET_URL}}', (response)=> {
+            document.querySelector("#help").innerHTML=response
+        })
+        const search_form = document.querySelector("#search-form");
+        const blog = document.querySelector("#blogurl");
+        const query = document.querySelector("#query");
+        query.addEventListener("input", request_autocomplete_tags);
+        search_form.addEventListener("submit", search_handler)
+        if( blog.value != "" ){
+            query.focus();
+            if(  query.value != ""){
+                query.selectionStart = query.selectionEnd = query.value.length;
+                search(search_form);
+            }
+        } else {
+            blog.focus();
+        }
+        const pager = document.querySelector("#page");
+        pager.addEventListener("input", () => paginate(search_form));
 
-                     window.addEventListener("popstate",
-                        (event) => {
-                            set_search_form(search_form, event.state, true);
-                            search(search_form, false);
-                        }
-                    )
-                }
-            {% endassets %}
-        </script>
-        {% assets "css" %}
-        <link rel="stylesheet" type="text/css" href="/{{ASSET_URL}} ">
-        {% endassets %}
-    </head>
-    <body onload="javascript:xapblr_onload()">
-        <div id="grid">
-            <div id="search-header">
-                <h1>xapblr@{{config["about"]["instance_name"]}}</h1>
-            </div id>
-            <div id="applet">
-            <form id="search-form">
-                <div id="search-container">
-                    <input name="blog"  id="blogurl" type="text" placeholder="Username" {% if blog %} value="{{blog}}" {%endif%} />
-                    <input name="query" id="query" type="text" placeholder="Search Terms" {% if query %} value="{{query}}" {%endif%}  />
-                    <input type="submit" id="search" value="Search" />
-                </div>
-                <div id="search-controls">
-                    <label for="sort-by">Sort by</label>
-                    <select name="sort" id="sort-by">
-                        <option value="newest">newest</option>
-                        <option value="oldest">oldest</option>
-                        <option value="relevance">relevance</option>
-                    </select>
-                    <label for="render">Preview posts using</label>
-                    <select name="render" id="render">
-                        <option value="plain">plain (fastest, ugliest)</option>
-                        <option value="html" selected="selected">basic html (slower, prettier)</option>
-                        <option value="embed">embed (slowest, prettiest)</option>
-                    </select>
-                </div>
-                <div id="results-meta">
-                    <div id="results-meta-complete">
-                        Retrieved <span class="count"></span> results in <span class="time"></span> ms.
-                    </div>
+         window.addEventListener("popstate",
+            (event) => {
+                set_search_form(search_form, event.state, true);
+                search(search_form, false);
+            }
+        )
+    }
+    {% endassets %}
+</script>
+{% endblock %}
 
-                    <div id="results-meta-paginated">
-                        <div style="float: left;">
-                        Retrieved results
-                            <span class="match_start"></span>‒<span class="match_end"></span>
-                            of <span class="matches_total"></span>
-                            in <span class="time"></span> ms.
-                        </div>
-                        <div style="float: right;">
-                            <label id="number-label" for="page">Go to page</label>
-                            <input type="number" name="page" style="width: 5em" id="page" min="1" value="{{page}}" />
-                        </div>
-                    </div>
-                </div>
-                <div id="error">
-                    <span class="error-occured">An error occured:</span>
-                    <span class="error-msg"></span>
-                </div>
-            </form>
-            </div>
-            <div id="sidebar">
-                {% include "menu.html.jinja" %}
-                <div id="help"></div>
-                {% include "about.html.jinja" %}
-            </div>
-            <div id="results"></div>
+{% block body %}
+<div id="search-header">
+    <h1>xapblr@{{config["about"]["instance_name"]}}</h1>
+</div id>
+<div id="applet">
+    <form id="search-form">
+        <div id="search-container">
+            <input name="blog"  id="blogurl" type="text" placeholder="Username" {% if blog %} value="{{blog}}" {%endif%} />
+            <input name="query" id="query" type="text" placeholder="Search Terms" {% if query %} value="{{query}}" {%endif%}  />
+            <input type="submit" id="search" value="Search" />
         </div>
+        <div id="search-controls">
+            <label for="sort-by">Sort by</label>
+            <select name="sort" id="sort-by">
+                <option value="newest">newest</option>
+                <option value="oldest">oldest</option>
+                <option value="relevance">relevance</option>
+            </select>
+            <label for="render">Preview posts using</label>
+            <select name="render" id="render">
+                <option value="plain">plain (fastest, ugliest)</option>
+                <option value="html" selected="selected">basic html (slower, prettier)</option>
+                <option value="embed">embed (slowest, prettiest)</option>
+            </select>
+        </div>
+        <div id="results-meta">
+            <div id="results-meta-complete">
+                Retrieved <span class="count"></span> results in <span class="time"></span> ms.
+            </div>
 
-    </body>
+            <div id="results-meta-paginated">
+                <div style="float: left;">
+                Retrieved results
+                    <span class="match_start"></span>‒<span class="match_end"></span>
+                    of <span class="matches_total"></span>
+                    in <span class="time"></span> ms.
+                </div>
+                <div style="float: right;">
+                    <label id="number-label" for="page">Go to page</label>
+                    <input type="number" name="page" style="width: 5em" id="page" min="1" value="{{page}}" />
+                </div>
+            </div>
+        </div>
+        <div id="error">
+            <span class="error-occured">An error occured:</span>
+            <span class="error-msg"></span>
+        </div>
+    </form>
+</div>
+    <div id="results"></div>
+</div>
+{% endblock %}
 
-    <div id="templates" style="display:none;">
-        <a class="tag"></a>
-        <div class="result">
-            <div class="result-body"></div>
-            <div class="result-tags"></div>
-            <div class="nav-container">
-                <div class="nav-container-content">
-                    <div class="toggle">
-                        &#x1f441;
-                    </div>
-                    <div class="external-go">
-                        <a>&#128279;</a>
-                    </div>
+{% block foot %}
+<div id="templates" style="display:none;">
+    <a class="tag"></a>
+    <div class="result">
+        <div class="result-body"></div>
+        <div class="result-tags"></div>
+        <div class="nav-container">
+            <div class="nav-container-content">
+                <div class="toggle">
+                    &#x1f441;
+                </div>
+                <div class="external-go">
+                    <a>&#128279;</a>
                 </div>
             </div>
         </div>
     </div>
-
-</html>
+</div>
+{% endblock %}

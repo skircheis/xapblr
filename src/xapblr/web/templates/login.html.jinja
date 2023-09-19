@@ -1,32 +1,23 @@
- <!DOCTYPE html>
-<html>
-    <title>xapblr v{{version}}</title>
-    <head>
-        {% assets "css" %}
-        <link rel="stylesheet" type="text/css" href="/{{ASSET_URL}} ">
-        {% endassets %}
-        {% assets "js" %}
-        <script type="text/javascript" src="/{{ASSET_URL}}"></script>
-        {% endassets %}
-        <script type="text/javascript">
-            function xapblr_onload() {
-                var login_form = document.querySelector("#login-form");
-                login_form.addEventListener("submit", login_handler);
-            }
-        </script>
-    </head>
-    <body onload="javascript:xapblr_onload()">
-        <div id="login-grid">
-            <h1>Welcome to xapblr@{{config["about"]["instance_name"]}}</h1>
-            <div id="login">
-                <form id="login-form">
-                    <input id="username" name="username" type="text" placeholder="Username or email" /> <br />
-                    <input id="password" name="password" type="password" placeholder="Password" /> <br />
-                    <input id="login" type="submit" value="Log in" />
-                </form>
-                <span id="login-message"> </span>
-            </div>
-            {% include "about.html.jinja" %}
-        </div>
-    </body>
-</html>
+{% extends "base.html.jinja" %}
+{% block head %}
+<script type="text/javascript">
+    window.onload = () => {
+        var login_form = document.querySelector("#login-form");
+        login_form.addEventListener("submit", login_handler);
+    };
+</script>
+{% endblock %}
+{% block body %}
+<div id="login-grid">
+    <h1>Welcome to xapblr@{{config["about"]["instance_name"]}}</h1>
+    <div id="login">
+        <form id="login-form">
+            <input id="username" name="username" type="text" placeholder="Username or email" /> <br />
+            <input id="password" name="password" type="password" placeholder="Password" /> <br />
+            <input id="login" type="submit" value="Log in" />
+        </form>
+        <span id="login-message"> </span>
+    </div>
+    {% include "about.html.jinja" %}
+</div>
+{% endblock %}
