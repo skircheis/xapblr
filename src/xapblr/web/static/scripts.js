@@ -11,8 +11,8 @@ function getHTML(url, callback) {
     xhr.send();
 }
 
-function fetch_json(url, data) {
-    return fetch(url,
+async function fetch_json(url, data) {
+    return await fetch(url,
         {method: "POST",
             headers: {
                 "Accept": "application/json",
