@@ -6,8 +6,8 @@ function getHTML(url, callback) {
         callback(this.responseText);
     }
 
-    xhr.open('GET', url);
-    xhr.responseType = 'text';
+    xhr.open("GET", url);
+    xhr.responseType = "text";
     xhr.send();
 }
 
@@ -15,8 +15,8 @@ function fetch_json(url, data) {
     return fetch(url,
         {method: "POST",
             headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                "Accept": "application/json",
+                "Content-Type": "application/json"
             },
             body: JSON.stringify(data)
         }
