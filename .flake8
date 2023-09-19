@@ -1,3 +1,12 @@
 [flake8]
 max-line-length = 88
 extend-ignore = E203,E501
+per-file-ignores =
+    src/xapblr/web/views/__init__.py:F401,E402
+    src/xapblr/models/*.py:F821
+exclude =
+    .git
+    __pycache__
+    old
+    build
+    dist

@@ -15,13 +15,13 @@ from .utils import _login_required, _render_template, JSONResponse
 @app.route("/search/<blog>/<query>", defaults={"page": 1})
 @app.route("/search/<blog>/<query>/page/<int:page>")
 @_login_required
-def search_get(blog, query, page):
+def search_view(blog, query, page):
     return _render_template("search.html.jinja", blog=blog, query=query, page=page)
 
 
 @app.route("/search", methods=["POST"])
 @_login_required
-def search_post():
+def run_search():
     pagesize = 50
     # TODO make this configurable?
 

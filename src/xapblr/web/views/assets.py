@@ -4,5 +4,5 @@ from .. import app
 
 
 @app.route("/assets/<path:path>")
-def send_static(path):
+def send_asset(path):
     return send_from_directory(str(get_data_dir() / ".webstatic"), path)

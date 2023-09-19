@@ -15,7 +15,7 @@ def _authenticate(token):
 
 
 @app.route("/clip", methods=["GET"])
-def _clip_offer_view():
+def clip_offer():
     _authenticate(request.args.get("auth_token", ""))
     if "agent" not in request.args.keys():
         abort(400)
@@ -24,7 +24,7 @@ def _clip_offer_view():
 
 
 @app.route("/clip", methods=["POST"])
-def _clip_accept_view():
+def clip_accept():
     data = request.json
     _authenticate(data.get("auth_token", ""))
 

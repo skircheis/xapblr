@@ -19,7 +19,7 @@ def login():
 
 
 @app.route("/login", methods=["POST"])
-def do_login():
+def try_login():
     try:
         user = request.json["username"]
     except KeyError:
