@@ -59,6 +59,21 @@ class DateRangeProcessor(RangeProcessor):
             raise QueryParserError(str(e))
         return Query(Query.OP_VALUE_RANGE, self.slot, begin, end)
 
+class XapblrQueryParser(QueryParser):
+    def __init__(self):
+        QueryParser.__init__(self)
+        self.set_stemming_strategy(QueryParser.STEM_NONE)
+        self.set_default_op(Query.OP_AND)
+
+        self.add_rangeprocessor(DateRangeProcessor(value_slots["timestamp"], "date:"))
+
+        [
+            self.add_boolean_prefix(p, prefixes[p])
+            for p in ["author", "has", "link", "media", "op"]
+        ]
+        self.add_prefix("image", prefixes["image"])
+        self.add_boolean_prefix("tag", TagProcessor())
+
 
 def search(args):
     """
@@ -74,18 +89,7 @@ def search(args):
     }
 
     db = get_db(args.blog, "r")
-    qp = QueryParser()
-    qp.set_stemming_strategy(QueryParser.STEM_NONE)
-    qp.set_default_op(Query.OP_AND)
-
-    qp.add_rangeprocessor(DateRangeProcessor(value_slots["timestamp"], "date:"))
-
-    [
-        qp.add_boolean_prefix(p, prefixes[p])
-        for p in ["author", "has", "link", "media", "op"]
-    ]
-    qp.add_prefix("image", prefixes["image"])
-    qp.add_boolean_prefix("tag", TagProcessor())
+    qp = XapblrQueryParser()
 
     qstr = " ".join(args.search)
     try:
