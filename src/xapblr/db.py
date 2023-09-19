@@ -17,5 +17,6 @@ class Database:
     def session(self):
         return Session(self.engine)
 
+
 def get_db():
     return Database(echo=config.get("debug", False))

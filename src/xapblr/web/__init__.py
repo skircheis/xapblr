@@ -2,8 +2,10 @@ from flask import Flask
 from flask_assets import Environment, Bundle
 from flask_login import LoginManager
 from subprocess import Popen, PIPE
+from sys import exit
 
 from ..config import config
+from ..models.user import User
 from .utils import get_data_dir
 from .controllers.setup import setup
 
@@ -17,19 +19,25 @@ def pandoc_filter(_in, out, **kwargs):
 data_dir = get_data_dir()
 static_dir = data_dir / ".webstatic"
 
-app = Flask(__name__)
-if config["multi_user"]:
-    try:
-        app.secret_key = config["secret_key"].encode("utf8")
-    except KeyError:
-        import secrets
 
-        key = secrets.token_hex()
-        sys.exit(
-            f"In multi-user mode, a secret_key must be configured. Here is one you can use: {key}."
-        )
-    setup()
+class XapblrWebServer(Flask):
+    def run(self, *args, **kwargs):
+        if config["multi_user"]:
+            try:
+                app.secret_key = config["secret_key"].encode("utf8")
+            except KeyError:
+                import secrets
 
+                key = secrets.token_hex()
+                exit(
+                    f"In multi-user mode, a secret_key must be configured. Here is one you can use: {key}."
+                )
+            setup()
+
+        Flask.run(self, *args, **kwargs)
+
+
+app = XapblrWebServer(__name__)
 assets = Environment(app)
 assets.url = "assets"
 assets.directory = str(static_dir)
@@ -51,4 +59,4 @@ def load_user(user_id):
 
 login_manager.init_app(app)
 
-from .views import *
+from .views import *  # noqa: E402 F401 F403

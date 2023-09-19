@@ -1,16 +1,17 @@
 from sqlalchemy import func, select
 from sqlalchemy.orm import joinedload
 
-from xapblr.config import config
-from xapblr.index import add_caption_to_doc
-from xapblr.models.image import Image, ImageState, ImageInPost
-from xapblr.db import get_db as get_sqldb
-from xapblr.utils import get_db, get_unique_term, prefixes
+from ...config import config
+from ...index import add_caption_to_doc
+from ...models.image import Image, ImageState
+from ...db import get_db as get_sqldb
+from ...utils import get_db
 
-from time import time_ns, time
-from xapian import DocNotFoundError, TermGenerator
+from time import time
+from xapian import TermGenerator
 
-def clip_accept(imgs):
+
+def accept(imgs):
     dbs = {}
     tg = TermGenerator()
     db = get_sqldb()
@@ -32,8 +33,10 @@ def clip_accept(imgs):
                 add_caption_to_doc(x, p.post_id, tg, img.caption)
         s.commit()
 
-def clip_offer(args):
+
+def offer(args):
     out = {}
+    db = get_sqldb()
     with db.session() as s:
         q = (
             select(Image)

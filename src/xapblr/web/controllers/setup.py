@@ -4,6 +4,7 @@ from ...db import get_db
 from sqlalchemy import func, select
 from time import time
 
+
 def setup():
     db = get_db()
     with db.session() as session:
@@ -26,6 +27,7 @@ def setup():
             session.add(default_account)
         session.commit()
 
+
 def get_statuses(session):
     q = select(Status).where(Status.name.in_(StatusE))
     out = {}
@@ -35,6 +37,7 @@ def get_statuses(session):
         if k not in out.keys():
             out[k] = Status(name=k)
     return out
+
 
 def get_privileges(session):
     q = select(Privilege).where(Privilege.name.in_(PrivilegeE))
