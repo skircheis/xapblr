@@ -7,7 +7,7 @@
         {% endassets %}
         <script>
             {% assets "md" %}
-                function xapblr_onload() {
+                window.onload = () => {
                     getHTML('/{{ASSET_URL}}', (response)=> {
                         document.querySelector("#help").innerHTML=response
                     })
@@ -40,7 +40,7 @@
         <link rel="stylesheet" type="text/css" href="/{{ASSET_URL}} ">
         {% endassets %}
     </head>
-    <body onload="javascript:xapblr_onload()">
+    <body>
             <div id="grid">
                 <div id="applet">
                 <form id="search-form">
