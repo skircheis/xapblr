@@ -22,14 +22,11 @@ function search(form, push_state = true) {
     const data = Object.fromEntries(formData.entries());
     cached_search = formData;
     if (push_state) {
-        var url = "/" + formData.get("blog") + "/" + formData.get("query")
-        if ( formData.get("page") > 1 ) {
-            url += "/page/" + formData.get("page")
-        }
-        history.pushState(formData, "", url);
     }
     fetch("/search",
-        {method: "POST",
+        {
+            method: "POST",
+            mode: "cors",
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -41,9 +38,17 @@ function search(form, push_state = true) {
             display_results(res["results"]);
             display_meta(res["meta"]);
         }
-    ).then( res => {
-        var target = document.querySelector("#grid");
-        target.scrollTop = 0;
+    ).then( res =>
+        {
+            var target = document.querySelector("#grid");
+            target.scrollTop = 0;
+            if (push_state) {
+                var url = "/" + formData.get("blog") + "/" + formData.get("query")
+                if ( formData.get("page") > 1 ) {
+                    url += "/page/" + formData.get("page")
+                }
+                history.pushState(formData, "", url);
+            }
         }
     )
 }
