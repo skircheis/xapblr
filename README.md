@@ -150,7 +150,7 @@ posts that you know have been edited on Tumblr, pass suitable options to
 
 ## Dependencies: ##
  * Python 3 and
- * * `pytumblr`
+ * * `pytumblr2`
  * * `xapian`
  * * `dateparser`
  * * `flask` and `flask-assets` (for the web interface)

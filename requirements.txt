@@ -1,4 +1,4 @@
-pytumblr
+pytumblr2
 flask
 flask-assets
 dateparser

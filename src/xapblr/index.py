@@ -2,7 +2,7 @@ from time import time
 from datetime import datetime
 from json import dumps
 from math import ceil
-import pytumblr
+import pytumblr2 as pytumblr
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 import sys
