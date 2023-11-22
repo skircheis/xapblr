@@ -8,14 +8,24 @@ Think `notmuch`, but for Tumblr.
 
 ### Installation
 
-If you run Arch:
+#### If you run Arch:
+`xapblr` uses @nostalgebraist's [fork of `pytumblr`](https://github.com/nostalgebraist/pytumblr2).
+It's not on the AUR, but you can [build it as an Arch package](https://github.com/skircheis/python-pytumblr2-PKGBUILD/tree/master).
 ```sh
+git clone https://github.com/skircheis/python-pytumblr2-PKGBUILD python-pytumblr2-git
+cd python-pytumblr2-git
+makepkg -is
+```
+Then repeat the procedure for `xapblr`:
+```
 git clone https://github.com/skircheis/xapblr-PKGBUILD xapblr
 cd xapblr
 makepkg -is
 ```
 
-Otherwise clone the repository manually and build it as a Python package:
+#### Otherwise
+Install dependencies with pip.
+Clone the repository manually and build it as a Python package:
 ```sh
     cd xapblr
     python -m build --wheel --no-isolation
