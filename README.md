@@ -93,7 +93,7 @@ If running as a `systemd` service, repoint it through `systemctl --user edit xap
 
 ## CLIP generation of captions
 
-`xapblr` can caption images in posts using [Open CLIP}(https://github.com/mlfoundations/open_clip).
+`xapblr` can caption images in posts using [Open CLIP](https://github.com/mlfoundations/open_clip).
 Because this is costly, it is optional and runs asynchronously on a client-server model.
 To enable captioning, first configure an authentication token and a server profile in `$XDG_CONFIG_HOME/xapblr/config.json`:
 ```json
