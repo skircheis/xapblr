@@ -5,3 +5,6 @@ Description=Locally index a Tumblr blog, daily.
 OnCalendar=daily
 Persistent=true
 Unit=xapblr@%i.service
+
+[Install]
+WantedBy=timers.target
