@@ -1,4 +1,4 @@
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import joinedload
 
 from xapblr.config import config
@@ -10,6 +10,7 @@ from xapblr.utils import get_db, get_unique_term, prefixes
 from time import time_ns, time
 from xapian import DocNotFoundError, TermGenerator
 
+
 def clip_accept(imgs):
     dbs = {}
     tg = TermGenerator()
@@ -17,7 +18,9 @@ def clip_accept(imgs):
         q = (
             select(Image)
             .options(joinedload(Image.posts))
-            .where(Image.id.in_(imgs.keys()))
+            .where(Image.id.in_(imgs.keys()) & (Image.state == ImageState.ASSIGNED))
+            # the second condition ensures that only the first submission of a
+            # caption will be saved
         )
         for img in s.scalars(q).unique():
             img.state = ImageState.CAPTIONED
@@ -31,9 +34,24 @@ def clip_accept(imgs):
                 add_caption_to_doc(x, p.post_id, tg, img.caption)
         s.commit()
 
+
 def clip_offer(args):
     out = {}
     with db.session() as s:
+        # If an image was assigned more than timeout seconds ago, and has not
+        # been captioned yet, it is assumed that the assignee will not complete
+        # the job. We should mark the image as available for other agents.
+        conn = s.connection()
+        refresh = (
+                update(Image)
+                .where(
+                    (Image.state == ImageState.ASSIGNED)
+                    & (Image.assigned + config["clip"]["timeout"] < int(time()))
+                    )
+                .values(state = ImageState.AVAILABLE)
+                )
+        conn.execute(refresh)
+
         q = (
             select(Image)
             .where(Image.state == ImageState.AVAILABLE)

@@ -1,6 +1,7 @@
 {
     "clip": {
-        "batch_size": 10
+        "batch_size": 10,
+        "timeout": 600
     },
     "clip_agent": {
         "sleep": 600
