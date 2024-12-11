@@ -11,6 +11,7 @@ class ImageState(StrEnum):
     AVAILABLE = auto()
     ASSIGNED = auto()
     CAPTIONED = auto()
+    ERROR = auto()
 
 
 class Image(Base):
@@ -25,6 +26,7 @@ class Image(Base):
     agent: Mapped[Optional[str]]
     captioned: Mapped[Optional[int]]
     caption: Mapped[Optional[str]]
+    error: Mapped[Optional[str]]
 
     posts: Mapped[List["ImageInPost"]] = relationship(back_populates="image")
 

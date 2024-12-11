@@ -150,8 +150,8 @@ def index(args):
     print(f"Indexing {args.blog}... ", end="")
     try:
         blog = client.blog_info(args.blog)["blog"]
-    except KeyError:
-        print()
+    except KeyError as e:
+        print(client.blog_info(args.blog))
         print("Blog does not exist or API key owner is blocked by it.", file=sys.stderr)
         # TODO: this should probably throw instead
         return

@@ -83,7 +83,14 @@ class Captioner:
             t = self.fs.get()
             print("Generating caption... ", end=" ", flush=True)
             start = time_ns()
-            self.caption(t)
+            try:
+                self.caption(t)
+            except Exception as e:
+                t["error"] = str(e)
+                t["success"] = False
+            else:
+                t["error"] = None
+                t["success"] = True
             dt = time_ns() - start
             dt_ms = int(dt / 10**6)
             self.ctime += dt

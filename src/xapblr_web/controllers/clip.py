@@ -23,8 +23,13 @@ def clip_accept(imgs):
             # caption will be saved
         )
         for img in s.scalars(q).unique():
-            img.state = ImageState.CAPTIONED
-            img.caption = imgs[img.id]["caption"]
+            submitted = imgs[img.id]
+            if submitted["success"]:
+                img.state = ImageState.CAPTIONED
+                img.caption = submitted["caption"]
+            else:
+                img.state = ImageState.ERROR
+                img.error = submitted["error"]
             img.captioned = int(time())
 
             for p in img.posts:
