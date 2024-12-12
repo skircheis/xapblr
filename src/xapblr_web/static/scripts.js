@@ -81,11 +81,11 @@ function display_meta(meta) {
     } ;
     if ( meta["error"] != undefined ) {
         target.style.display = "none";
-        error_disp.style.display = "block";
+        error_disp.style.display = "flex";
         error_disp.querySelector(".error-msg").innerHTML = meta["error"];
         return;
     } else {
-        target.style.display = "block";
+        target.style.display = "flex";
         error_disp.style.display = "none";
     }
     if ( meta["offset"] > meta["matches"] ) {
@@ -93,14 +93,14 @@ function display_meta(meta) {
         pager.value = pages;
         paginate(search_form);
     } else if (meta["count"] < meta["matches"] ){
-        paginated.style.display = "block";
+        paginated.style.display = "flex";
         complete.style.display = "none";
         target.querySelector(".match_start").innerHTML = meta["offset"] + 1;
         target.querySelector(".match_end").innerHTML = meta["offset"] + meta["count"];
         target.querySelector(".matches_total").innerHTML = meta["matches"];
         set_time(paginated);
     } else {
-        complete.style.display = "block";
+        complete.style.display = "flex";
         paginated.style.display = "none";
         target.querySelector(".count").innerHTML = meta["count"];
         set_time(complete);

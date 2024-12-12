@@ -39,6 +39,7 @@
         {% assets "css" %}
         <link rel="stylesheet" type="text/css" href="/{{ASSET_URL}} ">
         {% endassets %}
+        <meta name="viewport" content="width: device-width, initial-scale=1">
     </head>
     <body>
         <div id="grid">
@@ -50,34 +51,38 @@
                         <input type="submit" id="search" value="Search" />
                     </div>
                     <div id="search-controls">
+                        <div id="sort-by-container">
                         <label for="sort-by">Sort by</label>
                         <select name="sort" id="sort-by">
                             <option value="newest">newest</option>
                             <option value="oldest">oldest</option>
                             <option value="relevance">relevance</option>
                         </select>
-                        <label for="render">Preview posts using</label>
+                        </div>
+                        <div id="render-container">
+                        <label for="render">Previewer </label>
                         <select name="render" id="render">
-                            <option value="plain">plain (fastest, ugliest)</option>
-                            <option value="html" selected="selected">basic html (slower, prettier)</option>
-                            <option value="embed">embed (slowest, prettiest)</option>
+                            <option value="plain">plain</option>
+                            <option value="html" selected="selected">basic html</option>
+                            <option value="embed">embed</option>
                         </select>
+                        </div>
                     </div>
                     <div id="results-meta">
-                        <div id="results-meta-complete">
+                        <div id="results-meta-complete" class="results-meta">
                             Retrieved <span class="count"></span> results in <span class="time"></span> ms.
                         </div>
 
-                        <div id="results-meta-paginated">
-                            <div style="float: left;">
+                        <div id="results-meta-paginated" class="results-meta">
+                            <div>
                             Retrieved results
                                 <span class="match_start"></span>‒<span class="match_end"></span>
-                                of <span class="matches_total"></span> (estimated)
+                                of <span class="matches_total"></span> (est.)
                                 in <span class="time"></span> ms.
                             </div>
-                            <div style="float: right;">
-                                <label id="number-label" for="page">Go to page</label>
-                                <input type="number" name="page" style="width: 5em" id="page" min="1" value="{{page}}" />
+                            <div>
+                                <label id="number-label" for="page">Page</label>
+                                <input type="text" inputmode="numeric" pattern="[0-9]*" name="page" style="width: 5em" id="page" min="1" value="{{page}}" />
                             </div>
                         </div>
                     </div>

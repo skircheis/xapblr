@@ -1,3 +1,5 @@
+@use 'sass:math'
+
 $bg: #2c2c2e
 $fg: #b2b2b2
 $gy: #3a3a3a
@@ -11,16 +13,32 @@ $yw: #efef8f
 
 $font-stack: 'Helvetica Neue', HelveticaNeue, Helvetica, Arial, sans-serif
 
+$mobile-width: 800px
+$pixel-ratios: (1.5, 2, 3)
+
+@mixin desktop
+    @media (min-width: $mobile-width+1)
+      @content
+
+@mixin mobile
+    @media (max-width: $mobile-width)
+        @content
+
 body
+    display: flex
+    overflow: auto
+    justify-content: space-between
+
     background-color: $bg
     color: $fg
     margin: 0px
+
     font: 100% $font-stack
     font-style: normal
     font-variant: normal
     font-weight: normal
-    display: flex
-    justify-content: center
+    &:before, &:after
+        content: ''
 
 
 img
@@ -60,20 +78,25 @@ label
 
 #grid
     display: grid
-    column-gap: 1em
+    @include desktop
+        column-gap: 1em
     grid-template-rows: min-content 1fr
-    grid-template-columns: 1fr 25em
+    grid-template-columns: 1fr auto
     grid-template-areas: "search help" "results help"
-    width: min(1080px, 100vw)
-    overflow: auto
-    height: 100vh
+    height: fit-content
 
 
 #help
+    @include desktop
+        display: grid
+    @include mobile
+        display: none
     grid-area: help
     position: sticky
     top: 0
+
     max-height: 90vh
+    width: 25em
     overflow-y: scroll
     padding: 2px
     align-self: start
@@ -94,16 +117,18 @@ label
 #applet
     grid-area: search
     position: sticky
-    background-color: $bg
-    z-index: 99
     width: 100%
+    @include desktop
+        min-width: 35em
+        margin-top: 1em
     top: 0
-    margin-top: 1em
     margin-left: auto
     margin-right: auto
     padding-bottom: 10px
+    z-index: 99
+    background-color: $bg
+
     display: flex
-    flex-wrap: nowrap
     flex-direction: column
     > form > div
         margin-top: 4px
@@ -112,9 +137,16 @@ label
 #search-controls
     width: 100%
     max-width: 50em
-    display: flex
     justify-content: stretch
     padding-top: 4px
+    display: flex
+    @include mobile
+        flex-wrap: wrap
+        .item:nth-child(2)::after
+            //width: 100%
+        > *
+            display: content
+
 
     &, select
         font-family: $font-stack
@@ -131,12 +163,18 @@ label
         text-align: left
 
 #search-container
-    display: flex
     width: 100%
     max-width: 50em
     justify-content: stretch
-    flex-direction: row
     margin-top: 8px
+
+    display: flex
+    flex-direction: row
+    @include desktop
+        flex-wrap: nowrap
+    @include mobile
+        flex-wrap: wrap
+
     > *
       font-size: 1.2em
       margin-right: 4px
@@ -144,36 +182,34 @@ label
       margin-bottom: 0px
 
 
-#username
-    flex-grow: 1
-    flex-shrink: 3.8
-    flex-basis: 12em
+#blog
     width: 100%
+    flex-grow: 1
+    flex-basis: 12em
 
 #query
-    flex-grow: 9
     width: 100%
-    flex-basis: 12em
-    flex-shrink: 1.5
+    flex-grow: 15
+    flex-basis: 18em
+    flex-shrink: 1
 
 #search
     background-color: $gn
 
-    min-height: 2em
 
-    display: inline-flex
     justify-content: center
     align-items: center
-    --padding-x: 1.2em
-    padding: 0.5em var(--padding-x)
-    padding: 0
     margin-right: 0px
-
     text-align: center
 
-    flex-basis: 5em
-    flex-grow: 0.15
-    flex-shrink: 2
+    @include desktop
+        flex-basis: 5em
+        flex-grow: 0.15
+        //min-height: 2em
+        --padding-x: 1.2em
+        padding: 0.5em var(--padding-x)
+    @include mobile
+        width: 100%
 
     border-style: solid
     border-width: 2px
@@ -196,6 +232,16 @@ label
 
 #results-meta > div
     display: none
+    > div
+        padding: 3px
+
+.results-meta
+    display: flex
+    justify-content: space-between
+    width: 100%
+
+#page
+    max-width: 2em
 
 #error
     display: none
@@ -259,6 +305,7 @@ label
 .result-body
     height: 100%
     grid-area: body
+    overflow-x: scroll
 
 .result-tags
     grid-area: tags
