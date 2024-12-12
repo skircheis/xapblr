@@ -1,147 +1,147 @@
 function getHTML(url, callback) {
-    if (!window.XMLHttpRequest) return;
+  if (!window.XMLHttpRequest) return;
 
-    var xhr = new XMLHttpRequest();
-    xhr.onload = function() {
-        callback(this.responseText);
-    }
+  var xhr = new XMLHttpRequest();
+  xhr.onload = function () {
+    callback(this.responseText);
+  };
 
-    xhr.open('GET', url);
-    xhr.responseType = 'text';
-    xhr.send();
+  xhr.open("GET", url);
+  xhr.responseType = "text";
+  xhr.send();
 }
 
-function submit_handler(event){
-    event.preventDefault();
-    event.target.querySelector("#page").value = 1;
-    search(event.target);
+function submit_handler(event) {
+  event.preventDefault();
+  event.target.querySelector("#page").value = 1;
+  search(event.target);
 }
 
 function search(form, push_state = true) {
-    const formData = new FormData(form)
-    const data = Object.fromEntries(formData.entries());
-    cached_search = formData;
-    fetch("/search",
-        {
-            method: "POST",
-            mode: "cors",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData.entries());
+  cached_search = formData;
+  fetch("/search", {
+    method: "POST",
+    mode: "cors",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then((res) => res.json())
+    .then((res) => {
+      display_results(res["results"]);
+      display_meta(res["meta"]);
+    })
+    .then((res) => {
+      var target = document.querySelector("#grid");
+      target.scrollTop = 0;
+      if (push_state) {
+        var url = "/" + formData.get("blog") + "/" + formData.get("query");
+        if (formData.get("page") > 1) {
+          url += "/page/" + formData.get("page");
         }
-    ).then( res => res.json()).then(
-        res => {
-            display_results(res["results"]);
-            display_meta(res["meta"]);
-        }
-    ).then( res =>
-        {
-            var target = document.querySelector("#grid");
-            target.scrollTop = 0;
-            if (push_state) {
-                var url = "/" + formData.get("blog") + "/" + formData.get("query")
-                if ( formData.get("page") > 1 ) {
-                    url += "/page/" + formData.get("page")
-                }
-                history.pushState(formData, "", url);
-            }
-        }
-    )
+        history.pushState(formData, "", url);
+      }
+    });
 }
 
 function set_search_form(form, formData, page) {
-    var blog = form.querySelector("#blog");
-    var query = form.querySelector("#query");
-    blog.value = formData.get("blog");
-    query.value = formData.get("query");
-    var pager = form.querySelector("#page");
-    if (page) {
-        pager.value = formData.get("page");
-    } else {
-        pager.value = 1;
-    }
+  var blog = form.querySelector("#blog");
+  var query = form.querySelector("#query");
+  blog.value = formData.get("blog");
+  query.value = formData.get("query");
+  var pager = form.querySelector("#page");
+  if (page) {
+    pager.value = formData.get("page");
+  } else {
+    pager.value = 1;
+  }
 }
 
 function paginate(form) {
-    set_search_form(form, cached_search, false);
-    search(form);
+  set_search_form(form, cached_search, false);
+  search(form);
 }
 
 function display_meta(meta) {
-    var target = document.querySelector("#results-meta");
-    var error_disp = document.querySelector("#error");
-    var pager = target.querySelector("#page");
-    var pages = Math.ceil(meta["matches"]/meta["pagesize"]);
-    var paginated = target.querySelector("#results-meta-paginated");
-    var complete  = target.querySelector("#results-meta-complete");
-    var set_time =  (container) => {
-        container.querySelector(".time").innerHTML = Math.round(meta["time_ns"] / 1e6);
-    } ;
-    if ( meta["error"] != undefined ) {
-        target.style.display = "none";
-        error_disp.style.display = "flex";
-        error_disp.querySelector(".error-msg").innerHTML = meta["error"];
-        return;
-    } else {
-        target.style.display = "flex";
-        error_disp.style.display = "none";
-    }
-    if ( meta["offset"] > meta["matches"] ) {
-        var search_form = document.querySelector("#search-form");
-        pager.value = pages;
-        paginate(search_form);
-    } else if (meta["count"] < meta["matches"] ){
-        paginated.style.display = "flex";
-        complete.style.display = "none";
-        target.querySelector(".match_start").innerHTML = meta["offset"] + 1;
-        target.querySelector(".match_end").innerHTML = meta["offset"] + meta["count"];
-        target.querySelector(".matches_total").innerHTML = meta["matches"];
-        set_time(paginated);
-    } else {
-        complete.style.display = "flex";
-        paginated.style.display = "none";
-        target.querySelector(".count").innerHTML = meta["count"];
-        set_time(complete);
-    }
+  var target = document.querySelector("#results-meta");
+  var error_disp = document.querySelector("#error");
+  var pager = target.querySelector("#page");
+  var pages = Math.ceil(meta["matches"] / meta["pagesize"]);
+  var paginated = target.querySelector("#results-meta-paginated");
+  var complete = target.querySelector("#results-meta-complete");
+  var set_time = (container) => {
+    container.querySelector(".time").innerHTML = Math.round(
+      meta["time_ns"] / 1e6,
+    );
+  };
+  if (meta["error"] != undefined) {
+    target.style.display = "none";
+    error_disp.style.display = "flex";
+    error_disp.querySelector(".error-msg").innerHTML = meta["error"];
+    return;
+  } else {
+    target.style.display = "flex";
+    error_disp.style.display = "none";
+  }
+  if (meta["offset"] > meta["matches"]) {
+    var search_form = document.querySelector("#search-form");
+    pager.value = pages;
+    paginate(search_form);
+  } else if (meta["count"] < meta["matches"]) {
+    paginated.style.display = "flex";
+    complete.style.display = "none";
+    target.querySelector(".match_start").innerHTML = meta["offset"] + 1;
+    target.querySelector(".match_end").innerHTML =
+      meta["offset"] + meta["count"];
+    target.querySelector(".matches_total").innerHTML = meta["matches"];
+    set_time(paginated);
+  } else {
+    complete.style.display = "flex";
+    paginated.style.display = "none";
+    target.querySelector(".count").innerHTML = meta["count"];
+    set_time(complete);
+  }
 }
 
 function display_results(results) {
-    target = document.querySelector("#results");
-    while (target.hasChildNodes()) {
-          target.removeChild(target.firstChild);
-    }
-    results.forEach( res => {
-        template = document.querySelector("#templates .result").cloneNode(true);
-        body = template.querySelector(".result-body")
-        body.innerHTML = res["rendered"];
-        tags = template.querySelector(".result-tags")
-        res["tags"].forEach( tag => {
-            tag_template = document.querySelector("#templates .tag").cloneNode();
-            tag_template.innerHTML = "#" + tag;
-            tag_template.href = "https://tumblr.com/blog/view/" + res["blog_name"] + "/tagged/" + tag;
-            tags.appendChild(tag_template);
-        });
-        template.querySelector(".toggle").addEventListener("click", toggle_preview)
-        external_link = template.querySelector(".external-go a");
-        external_link.href = res["post_url"];
-        target.appendChild(template);
-    }
-    );
+  target = document.querySelector("#results");
+  while (target.hasChildNodes()) {
+    target.removeChild(target.firstChild);
+  }
+  results.forEach((res) => {
+    template = document.querySelector("#templates .result").cloneNode(true);
+    body = template.querySelector(".result-body");
+    body.innerHTML = res["rendered"];
+    tags = template.querySelector(".result-tags");
+    res["tags"].forEach((tag) => {
+      tag_template = document.querySelector("#templates .tag").cloneNode();
+      tag_template.innerHTML = "#" + tag;
+      tag_template.href =
+        "https://tumblr.com/blog/view/" + res["blog_name"] + "/tagged/" + tag;
+      tags.appendChild(tag_template);
+    });
+    template.querySelector(".toggle").addEventListener("click", toggle_preview);
+    external_link = template.querySelector(".external-go a");
+    external_link.href = res["post_url"];
+    target.appendChild(template);
+  });
 }
 
 function toggle_preview(event) {
-    target = event.target;
-    while (!target.classList.contains("result")) {
-        target = target.parentNode;
-    }
-    target = target.querySelector(".result-body");
-    if (target.style.overflow == "hidden" ) {
-        target.style.overflow = null;
-        target.style.maxHeight = null;
-    } else if (target.style.overflow == "" ) {
-        target.style.overflow = "hidden";
-        target.style.maxHeight = "100px";
-    }
+  target = event.target;
+  while (!target.classList.contains("result")) {
+    target = target.parentNode;
+  }
+  target = target.querySelector(".result-body");
+  if (target.style.overflow == "hidden") {
+    target.style.overflow = null;
+    target.style.maxHeight = null;
+  } else if (target.style.overflow == "") {
+    target.style.overflow = "hidden";
+    target.style.maxHeight = "100px";
+  }
 }
