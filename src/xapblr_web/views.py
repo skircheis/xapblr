@@ -19,7 +19,7 @@ def index():
     return render_template("index.html", version=version)
 
 
-@app.route("/<blog>", defaults={"query": "", "page": 1})
+@app.route("/<blog>/", defaults={"query": "", "page": 1})
 @app.route("/<blog>/<query>", defaults={"page": 1})
 @app.route("/<blog>/<query>/page/<int:page>")
 def prefilled(blog, query, page):
@@ -57,11 +57,11 @@ def search():
         page = int(request.json.get("page", 1)) - 1
     except (IndexError, ValueError):
         page = 0
+    page=max(page, 0)
     args.offset = pagesize * page
     for k, v in request.json.items():
         setattr(args, k, v)
     args.search = [fix_date_range(request.json["query"])]
-    # return vars(args)
     allowed_renderers = ["plain", "html", "embed"]
     if args.render not in allowed_renderers:
         return dumps({"error": "Invalid renderer: " + args.render + "."})

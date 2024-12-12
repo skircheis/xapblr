@@ -21,8 +21,6 @@ function search(form, push_state = true) {
     const formData = new FormData(form)
     const data = Object.fromEntries(formData.entries());
     cached_search = formData;
-    if (push_state) {
-    }
     fetch("/search",
         {
             method: "POST",
@@ -58,9 +56,11 @@ function set_search_form(form, formData, page) {
     var query = form.querySelector("#query");
     blog.value = formData.get("blog");
     query.value = formData.get("query");
+    var pager = form.querySelector("#page");
     if (page) {
-        var pager = form.querySelector("#page");
         pager.value = formData.get("page");
+    } else {
+        pager.value = 1;
     }
 }
 
