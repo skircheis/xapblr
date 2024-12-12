@@ -100,7 +100,7 @@ function display_meta(meta) {
     target.querySelector(".matches_total").innerHTML = meta["matches"];
     set_time(paginated);
   } else {
-    complete.style.display = "flex";
+    complete.style.display = "block";
     paginated.style.display = "none";
     target.querySelector(".count").innerHTML = meta["count"];
     set_time(complete);
