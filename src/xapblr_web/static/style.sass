@@ -86,7 +86,10 @@ label
     height: fit-content
 
 #header
-    display: flex
+    @include mobile
+        display: flex
+    @include desktop
+        display: none
     justify-content: space-between
     z-index: 30
     background-color: $bg
