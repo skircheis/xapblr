@@ -81,6 +81,7 @@ label
     display: grid
     @include desktop
         column-gap: 1em
+        width: min(1080px, 100vw)
     grid-template-rows: min-content min-content 1fr
     grid-template-columns: 1fr auto
     grid-template-areas: "header header" "search help" "results help"
