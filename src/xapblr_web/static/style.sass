@@ -178,10 +178,6 @@ label
     display: flex
     @include mobile
         flex-wrap: wrap
-        .item:nth-child(2)::after
-            //width: 100%
-        > *
-            display: contents
 
 
     &, select
@@ -199,22 +195,27 @@ label
         text-align: left
 
 #search-container
-    width: 100%
-    max-width: 50em
-    justify-content: stretch
+    max-width: min(50em, 100%)
+    justify-content: space-around
     margin-top: 8px
 
     display: flex
     flex-direction: row
     @include desktop
         flex-wrap: nowrap
+          margin-top: 0px
     @include mobile
         flex-wrap: wrap
+        padding-right: 8px
+        padding-right: 8px
+        > *
+          margin-top: 4px
+          ::after
+            content: ''
 
     > *
       font-size: 1.2em
       margin-right: 4px
-      margin-top: 0px
       margin-bottom: 0px
 
 
