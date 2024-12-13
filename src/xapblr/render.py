@@ -2,7 +2,7 @@ from json import dumps
 from requests import get
 from textwrap import wrap
 
-from .utils import get_author
+from .utils import get_author, format_timestamp
 
 
 def render_json(post, args):
@@ -93,8 +93,17 @@ def render_html(post, args):
     rendered.append(render_html_one(post))
     delim = "\n<hr />\n"
     inner_html = delim.join([r for r in rendered if r])
+
+    from datetime import datetime
+
+    ts = post["timestamp"]
+    dt = datetime.fromtimestamp(ts)
+    ts_hf = format_timestamp(ts)
+    ts_iso = dt.isoformat()
+    ts_words = dt.strftime("%B %-d, %Y at %H:%m")
     return (
         "<div class='tumblr-post'>\n\t"
+        f'<time datetime="{ts_iso}" title="{ts_words}">{ts_hf}</time>'
         + inner_html.replace("\n", "\n\t")[:-1]
         + "\n</div>\n"
     )

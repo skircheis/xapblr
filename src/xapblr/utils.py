@@ -31,6 +31,7 @@ def get_xdg_config_home():
     except KeyError:
         return Path(environ["HOME"]) / ".config"
 
+
 def get_xdg_data_home():
     try:
         return Path(environ["XDG_DATA_HOME"])
@@ -60,11 +61,13 @@ def get_db(blog, mode="r"):
             db.close()
             return Database(db_path_str, DB_CREATE_OR_OPEN)
 
+
 def get_unique_term(doc):
     for t in doc.termlist():
         if t.term[0] == ord("Q"):
             return t.term
     return None
+
 
 def get_author(post):
     try:
@@ -93,10 +96,10 @@ try:
         now = datetime.now()
         ts = datetime.fromtimestamp(ts)
         if (ts - now).total_seconds() > 0:
-            hf = humanfriendly.format_timespan(ts - now)
+            hf = humanfriendly.format_timespan(ts - now, max_units=1)
             return f"in {hf}"
         else:
-            hf = humanfriendly.format_timespan(now - ts)
+            hf = humanfriendly.format_timespan(now - ts, max_units=1)
             return f"{hf} ago"
 
 except ModuleNotFoundError:
