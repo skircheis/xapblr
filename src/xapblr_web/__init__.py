@@ -1,5 +1,11 @@
 from flask import Flask
-from flask_assets import Environment, Bundle
+
+from warnings import catch_warnings, simplefilter
+# workaround for webassets #531
+# https://github.com/miracle2k/webassets/issues/531
+with catch_warnings():
+    simplefilter("ignore")
+    from flask_assets import Environment, Bundle
 from subprocess import Popen, PIPE
 
 from .utils import get_data_dir
