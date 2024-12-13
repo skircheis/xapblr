@@ -121,7 +121,7 @@ def search(args):
 
 
 def get_end(src, latest=True):
-    if type(src) == str:
+    if type(src) is str:
         db = get_db(src)
     elif isinstance(src, Database):
         db = src

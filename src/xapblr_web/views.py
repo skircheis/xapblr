@@ -92,9 +92,7 @@ def clip_authenticate(token):
 @app.route("/clip", methods=["GET"])
 def clip_offer_view():
     clip_authenticate(request.args.get("auth_token", ""))
-    try:
-        agent = request.args["agent"]
-    except KeyError:
+    if "agent" not in request.args.keys():
         abort(400)
     out = clip_offer(request.args)
     return Response(dumps(out), mimetype="application/json")

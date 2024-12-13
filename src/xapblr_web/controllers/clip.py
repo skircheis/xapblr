@@ -3,12 +3,12 @@ from sqlalchemy.orm import joinedload
 
 from xapblr.config import config
 from xapblr.index import add_caption_to_doc
-from xapblr.models.image import Image, ImageState, ImageInPost
+from xapblr.models.image import Image, ImageState
 from xapblr.db import db
-from xapblr.utils import get_db, get_unique_term, prefixes
+from xapblr.utils import get_db
 
-from time import time_ns, time
-from xapian import DocNotFoundError, TermGenerator
+from time import time
+from xapian import TermGenerator
 
 
 def clip_accept(imgs):

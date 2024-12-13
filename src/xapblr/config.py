@@ -1,6 +1,5 @@
 from importlib.resources import files
 from json import load, JSONDecodeError
-from pathlib import Path
 import sys
 
 from .utils import get_xdg_config_home
