@@ -27,6 +27,9 @@
               var pager = document.querySelector("#page");
               pager.addEventListener("input", () => paginate(search_form));
 
+              var open_help = document.querySelector("#open-help");
+              open_help.addEventListener("click", () => toggle_help());
+
                window.addEventListener("popstate",
                   (event) => {
                       set_search_form(search_form, event.state, true);
@@ -43,6 +46,10 @@
   </head>
   <body>
     <div id="grid">
+      <div id="header">
+        <span id="title">xapblr</span>
+        <button id="open-help" title="Show help" class="hidden">?</button>
+      </div>
       <div id="applet">
         <form id="search-form">
           <div id="search-container">

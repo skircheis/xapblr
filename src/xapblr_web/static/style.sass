@@ -80,26 +80,54 @@ label
     display: grid
     @include desktop
         column-gap: 1em
-    grid-template-rows: min-content 1fr
+    grid-template-rows: min-content min-content 1fr
     grid-template-columns: 1fr auto
-    grid-template-areas: "search help" "results help"
+    grid-template-areas: "header header" "search help" "results help"
     height: fit-content
+
+#header
+    display: flex
+    justify-content: space-between
+    z-index: 30
+    background-color: $bg
+
+    padding-left: .5em
+    padding-right: .5em
+    grid-area: header
+
+    font-size: 24pt
+    font-weight: bolder
+
+#open-help
+    background-color: $bg
+    padding: 1px 6px
+    color: $cy
+    font-weight: bolder
+    border: 0px
+    font-size: 24pt
 
 
 #help
     @include desktop
         display: grid
+        grid-area: help
+        position: sticky
+        align-self: start
+        width: 25em
+        max-height: 90vh
     @include mobile
         display: none
-    grid-area: help
-    position: sticky
-    top: 0
+        position: fixed
+        z-index: 20
+        background-color: $tx
+        height: fit-content
+        max-height: calc(100vh - 2em)
+        width: 100vw
+        top: 2em
+        padding-top: 5px
 
-    max-height: 90vh
-    width: 25em
     overflow-y: scroll
     padding: 2px
-    align-self: start
     > :first-child
     margin-top: 0px !important
     h1, h2
@@ -114,6 +142,10 @@ label
     li > p
         margin-bottom: 0px
 
+#help.shown
+    position: fixed
+    display: block
+
 #applet
     grid-area: search
     position: sticky
@@ -121,11 +153,15 @@ label
     @include desktop
         min-width: 35em
         margin-top: 1em
+    @include mobile
+        margin-left: 5px
+        margin-right: 5px
+        max-width: 100vh
     top: 0
     margin-left: auto
     margin-right: auto
     padding-bottom: 10px
-    z-index: 99
+    z-index: 10
     background-color: $bg
 
     display: flex
@@ -145,7 +181,7 @@ label
         .item:nth-child(2)::after
             //width: 100%
         > *
-            display: content
+            display: contents
 
 
     &, select
@@ -196,20 +232,13 @@ label
 #search
     background-color: $gn
 
-
-    justify-content: center
-    align-items: center
-    margin-right: 0px
-    text-align: center
-
     @include desktop
+        margin-right: 0px
         flex-basis: 5em
         flex-grow: 0.15
-        //min-height: 2em
-        --padding-x: 1.2em
-        padding: 0.5em var(--padding-x)
     @include mobile
         width: 100%
+    text-align: center
 
     border-style: solid
     border-width: 2px
@@ -282,10 +311,10 @@ label
     padding: 10px
     column-gap: 8px
     background-color: $dk
-    -webkit-border-radius: 3px
     min-height: fit-content
-    -moz-border-radius: 3px
-    border-radius: 3px
+    -webkit-border-radius: 8px
+    -moz-border-radius: 8px
+    border-radius: 8px
 
 .external-go
     font-size: 1.5em
@@ -317,7 +346,7 @@ label
     display: flex
     flex-direction: column
     grid-column: nav
-    justify-content: top
+    align-content: initial
     grid-row: 1 / -1
     width: 100%
 

@@ -66,6 +66,15 @@ function paginate(form) {
   search(form);
 }
 
+function toggle_help() {
+    var open_help = document.querySelector("#help");
+    if (!open_help.classList.contains("shown")) {
+        open_help.classList.add("shown");
+    } else {
+        open_help.classList.remove("shown");
+    }
+}
+
 function display_meta(meta) {
   var target = document.querySelector("#results-meta");
   var error_disp = document.querySelector("#error");
