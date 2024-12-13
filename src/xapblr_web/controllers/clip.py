@@ -48,13 +48,13 @@ def clip_offer(args):
         # the job. We should mark the image as available for other agents.
         conn = s.connection()
         refresh = (
-                update(Image)
-                .where(
-                    (Image.state == ImageState.ASSIGNED)
-                    & (Image.assigned + config["clip"]["timeout"] < int(time()))
-                    )
-                .values(state = ImageState.AVAILABLE)
-                )
+            update(Image)
+            .where(
+                (Image.state == ImageState.ASSIGNED)
+                & (Image.assigned + config["clip"]["timeout"] < int(time()))
+            )
+            .values(state=ImageState.AVAILABLE)
+        )
         conn.execute(refresh)
 
         q = (

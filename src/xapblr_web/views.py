@@ -57,7 +57,7 @@ def search():
         page = int(request.json.get("page", 1)) - 1
     except (IndexError, ValueError):
         page = 0
-    page=max(page, 0)
+    page = max(page, 0)
     args.offset = pagesize * page
     for k, v in request.json.items():
         setattr(args, k, v)
@@ -80,12 +80,14 @@ def search():
 
     return Response(dumps(out), mimetype="application/json")
 
+
 def clip_authenticate(token):
     try:
         if token != config["clip"]["auth_token"]:
             abort(401)
     except KeyError:
         abort(500)
+
 
 @app.route("/clip", methods=["GET"])
 def clip_offer_view():
