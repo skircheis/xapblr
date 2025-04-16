@@ -34,4 +34,4 @@ assets.register("css", css)
 js = Bundle("scripts.js", output="scripts.js")
 assets.register("js", js)
 
-from .views import *
+from .views import * # noqa: E402, F403
