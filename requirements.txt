@@ -1,6 +1,0 @@
-pytumblr2
-flask
-flask-assets
-dateparser
-sqlalchemy>=1.4
-requests

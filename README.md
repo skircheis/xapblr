@@ -24,11 +24,10 @@ makepkg -is
 ```
 
 #### Otherwise
-Install dependencies with pip.
 Clone the repository manually and build it as a Python package:
 ```sh
     cd xapblr
-    python -m build --wheel --no-isolation
+    uv build
     python -m installer dist/*.whl
     sudo cp -t /etc/uwsgi config/uwsgi/xapblr.ini
 ```
