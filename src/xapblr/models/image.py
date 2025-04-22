@@ -1,5 +1,5 @@
 from typing import List, Optional
-from sqlalchemy import ForeignKey, UniqueConstraint, Column
+from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
 from enum import StrEnum, auto
