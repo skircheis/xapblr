@@ -1,6 +1,6 @@
 from typing import List, Optional
-from sqlalchemy import ForeignKey, UniqueConstraint, Column
-from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy.orm import Mapped, relationship, mapped_column
 
 from enum import StrEnum, auto
 
@@ -17,8 +17,8 @@ class ImageState(StrEnum):
 class Image(Base):
     __tablename__ = "images"
 
-    id: Mapped[int] = Column(primary_key=True)
-    media_key: Mapped[str] = Column(unique=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    media_key: Mapped[str] = mapped_column(unique=True)
     url: Mapped[str]
     state: Mapped[ImageState]
     created: Mapped[int]
@@ -28,17 +28,19 @@ class Image(Base):
     caption: Mapped[Optional[str]]
     error: Mapped[Optional[str]]
 
-    posts: Mapped[List["ImageInPost"]] = relationship("ImageInPost", back_populates="image")
+    posts: Mapped[List["ImageInPost"]] = relationship(
+        "ImageInPost", back_populates="image"
+    )
 
 
 class ImageInPost(Base):
     __tablename__ = "images_in_posts"
 
-    id: Mapped[int] = Column(primary_key=True)
-    image_id: Mapped[int] = Column(ForeignKey("images.id"))
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    image_id: Mapped[int] = mapped_column(ForeignKey("images.id"))
     image: Mapped["Image"] = relationship("Image", back_populates="posts")
-    post_id: Mapped[int] = Column()
-    blog: Mapped[str] = Column()
+    post_id: Mapped[int]
+    blog: Mapped[str]
 
     __table_args__ = (
         UniqueConstraint("image_id", "post_id", "blog", name="_uniqueness"),
