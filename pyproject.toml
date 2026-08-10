@@ -23,6 +23,7 @@ dependencies = [
     "pillow",
     "xapian-bindings",
     "versioningit",
+    "apscheduler"
 ]
 
 [build-system]
